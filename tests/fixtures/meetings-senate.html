@@ -1,0 +1,676 @@
+
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	
+	<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	    <meta name="robots" content="noimageindex">
+	    <meta charset="iso-8859-1">
+	    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	    	    <title>South Carolina Legislature Online - Senate Meeting Schedule</title>
+	    <link rel="SHORTCUT ICON" href="/images/stateflagsmall.ico" />
+		<link rel="icon" href="/images/stateflagsmall.ico" type="image/ico" />
+		<link rel="SHORTCUT ICON" href="/images/South-Carolina-Flag2.ico" />
+
+		<link type="text/css" rel="stylesheet" href="/css/main.css" media="all" />
+				
+		<!--[if lte IE 7]>
+		<link type="text/css" rel="stylesheet" href="/css/ie7main.css" media="all" />
+		<![endif]-->
+		<!--[if gte IE 7]>
+		<link type="text/css" rel="stylesheet" href="/css/iemain.css" media="all" />
+		<![endif]-->
+		<link type="text/css" rel="stylesheet" href="/css/print.css" media="print" />
+		<link type="text/css" rel="stylesheet" href="/css/supplement.css" media="screen" />
+		<!--<link type="text/css" rel="stylesheet" href="/css/zipsearch.css" media="screen" />
+		<link type="text/css" rel="stylesheet" href="/css/vote.css" media="screen" />
+		<link type="text/css" rel="stylesheet" href="/css/contact.css" media="screen" />
+		<link type="text/css" rel="stylesheet" href="/css/navwrap.css" media="screen" />
+		<link type="text/css" rel="stylesheet" href="/css/linkbar.css" media="screen" />-->
+	
+		<!--<script type="text/javascript" src="/js/jquery-1.10.1.min.js"></script>
+		<script type="text/javascript" src="/js/jquery-1.12.4.min.js"></script>-->
+		<script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+
+		<script type="text/javascript" src="/js/main_linux.js"></script>
+		
+		
+
+
+
+		<!--<script type="text/javascript" src="/js/common.js"></script>
+		<script type="text/javascript" src="/js/utils.js"></script>
+		<script type="text/javascript" src="/js/date.js"></script>
+		<script type="text/javascript" src="/js/lightbox.js"></script>
+		<script type="text/javascript" src="/js/legislation.js"></script>
+		<script type="text/javascript" src="/js/logon_lits.js"></script>
+		<script type="text/javascript" src="/js/message.js"></script>
+		<script type="text/javascript" src="/js/comm_meeting.js"></script>-->
+		<script type="text/vbscript" src="/vbs/comm_meeting.vbs"></script>
+		<!--<script type="text/javascript" src="/js/regs.js"></script>-->
+				
+	   	<script type="text/javascript">
+	    //document.onclick = function () { document.getElementById('transbox').style.display= 'none' };
+	    	var xmlhttp=false;
+			xmlhttp = create_xml_object();
+	
+			function getElement(ele)
+			{
+				var theobj = false;
+				if(typeof ele == 'string')
+					theobj = (document.getElementById)?document.getElementById(ele):document.all[ele];
+				else
+					theobj = ele;
+			
+				return theobj;
+			}
+		
+			function checkreader(friendlyalert)
+			{
+			 	/*friendlyalert=friendlyalert||false;
+			 	
+			 	var browser_info = perform_acrobat_detection();
+				if (!browser_info.acrobat)
+				{
+				 	loadadobebox('adobebox', '/adobe.php');
+					return false;
+				}
+				else if (friendlyalert)
+				{
+			 		alert(friendlyalert);
+				}*/
+				return true;
+			}
+				
+			function loadadobebox(boxname, url)
+			{
+				var response = false;
+	
+				doRequest(xmlhttp, "GET", url, false, null, null);
+				if (xmlhttp.status == 200)
+				{
+		         	response = xmlhttp.responseText;
+				}
+	
+				if(response)
+				{
+			 		var ele = document.getElementById(boxname);
+				 	if (ele)
+				 	{
+				 		ele.style.visibility = 'hidden';
+		 				ele.style.display = 'block';
+	
+		 				positionElement(ele, 'center', 'center', true);
+	
+						ele.innerHTML = response;
+					    ele.style.visibility = 'visible';
+					    ele.style.display = 'block';
+	//				    ele.scrollIntoView(true);
+					}
+				}
+				return response;
+			}
+	
+	
+			function init()
+			{
+		 		var ld=document.getElementById("loading");
+				if(ld)
+				{
+					ld.style.display = 'none';
+				}
+			}
+			
+			function openmore()
+			{
+			 	var id = document.getElementById('quicksearch');
+			 	if (id)
+			 	{
+				 	var pos = findPos(id);
+				 	id.style.zIndex = 10;
+		//		 	id.style.left = pos[0]+'px';
+		//		  	id.style.top = pos[1]+'px';
+				  	id.style.height = '295px';
+				  	id.style.position = 'absolute';
+				  	id.style.backgroundColor = '#f7f4ec';
+				  	var id2 = document.getElementById('searchmore');
+				  	if (id2)
+				  	{
+				  	 	id2.style.display = 'none';
+				  	}
+				  	var id3 = document.getElementById('contactlegislatordiv');
+				  	if (id3)
+				  	{
+				  	 	id3.style.display = 'none';
+				  	}
+				}
+			}
+		
+			function closemore()
+			{
+			 	var id = document.getElementById('quicksearch');
+			 	if (id)
+			 	{
+				  	id.style.height = '135px';
+				  	id.style.position = '';
+				  	id.style.backgroundColor = 'transparent';
+				  	var id2 = document.getElementById('searchmore');
+				  	if (id2)
+				  	{
+				  	 	id2.style.display = 'block';
+				  	}
+				  	var id3 = document.getElementById('contactlegislatordiv');
+				  	if (id3)
+				  	{
+				  	 	id3.style.display = '';
+				  	}
+				}		 	
+			}
+		
+		<!-- This script and many more are available free online at -->
+		<!-- The JavaScript Source!! http://javascript.internet.com -->
+		
+		<!-- Begin
+		function right(e) {
+		var msg = "Use of this image is strictly prohibited unless express written permission is given to the user by South Carolina Legislative Services Agency.";
+		if (navigator.appName == 'Netscape' && e.which == 3) {
+		alert(msg);
+		return false;
+		stopEvent(e);
+		}
+		if (navigator.appName == 'Microsoft Internet Explorer' && event.button==2) {
+		alert(msg);
+		return false;
+			stopEvent(event);
+		}
+		else return true;
+		}
+		
+	function trap() 
+	{
+		if(document.images)
+		{
+			for(i=0;i<document.images.length;i++)
+			{
+				if(document.images[i].className == 'allowcontextmenu')
+				{
+					// this should have no scripting
+				}
+				else
+				{
+				 	document.images[i].onmousedown = right;
+					document.images[i].oncontextmenu = function(){ return false; };
+					//document.images[i].onmouseup = right;
+				}
+			}
+		}
+	}
+
+	function findfwtext(texttofind) 
+	{
+	 	var fwtextele = document.getElementById('fwtext');
+		if(fwtextele)
+		{
+			fwtextele.value = texttofind;
+		}
+	}	
+		// End -->
+		</script>
+
+		<!-- ADDED FOR V4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LJY6FMNQKH"></script>
+
+
+<script type="text/javascript">
+
+//ADDED FOR V4
+//Google tag (gtag.js) 
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-LJY6FMNQKH');
+
+ 
+ /* COMMENTING OUT UPGRADING TO V4 -A
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36207109-1']);
+  _gaq.push(['_setDomainName', 'scstatehouse.gov']);
+  _gaq.push(['_setAllowLinker', true]);
+  _gaq.push(['_trackPageview']);
+ 
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+*/
+  
+      $(document).ready(function(){
+        // COMMENTING THIS OUT NO LONGER BEING ACTIVELY USED TO MONITOR FOR TRAFFIC TO SPECIFIC LINKS - A
+        /*
+          var anchors = $('div#contentsection a');
+
+          //console.log('anchors...'+anchors.length);
+          if(anchors.length > 0){
+            //console.log('setting up event handler...');
+            anchors.click(function(){
+              var a = $(this).attr('href');
+              if(_gaq && (a.substr(-3) == 'htm' || a.substr(-4) == 'html' || a.substr(-3) == 'doc' || a.substr(-4) == 'docx' || a.substr(-3) == 'pdf' || a.substr(-3) == 'xls' || a.substr(-4) == 'xlsx')) {
+                //console.log(a);
+                _gaq.push(['_trackPageview', $(this).attr('href')]);
+              }
+              
+              var aText = $(this).text().toLowerCase();
+              if (a.indexOf('getfile.php') > -1 && aText === 'word'){
+                    _gaq.push(['_trackEvent', 'Word Doc', 'Download', ('from page: ' + document.location + ' - href: ' + a)]);
+              }
+
+            });
+          }
+          */
+      });
+
+</script>
+	</head>
+	
+		
+	<body class="home"  onload="init(); trap();">
+	<noscript>Your browser does not support JavaScript!  This page will not render correctly.</noscript> 
+
+
+	
+	<div id="adobebox" style="position:absolute; width:400px; height:150px; border:2px solid #555555; background-color:#cccccc; display:none;"></div>
+	<div id="senatecontainer" >	
+				<div id="header" class="nodisplay" style="text-align:center; height:150px;" >
+									<img id="senateheaderimg" class="nodisplay" alt="South Carolina Legislature" title="South Carolina Legislature" src="/images/blank.gif" />
+								
+				
+				
+			</div>
+			<div class="printdisplay"><img border="0" src="/images/titleprint.jpg" alt="South Carolina Legislature" title="South Carolina Legislature" alt="South Carolina Legislature" title="South Carolina State Legislature" /><br /><hr /><br /></div>
+	
+			<div id="pagebody" >
+	
+	
+<!--<div id="topmessage">
+<br style="display:block; margin-top:10px;">
+Searches and data queries will be unavailable beginning Friday, August 19, 2016, from 8:00 PM until Saturday, August 20th at 8:00 AM<br>due to scheduled maintenance.</div>-->
+				<!-- Prompt IE 8/7/6 users to upgrade to a newer browser. -->
+				<!--[if lte IE 8]>
+				<div class="oldframe">In order to improve your experience using this website, please <a href="http://browsehappy.com/">upgrade your browser</a>.</div>
+				<![endif]-->
+			
+			
+			
+			<div id="menu" class="nodisplay">
+				<ul class="nodisplay">
+				<li><a href="/index.php">Home</a></li>
+<li class="selected"><a style="color:black;" href="/senate.php">Senate</a></li>
+<li><a href="/house.php">House</a></li>
+<li><a href="/committeeinfo.php">Committee&nbsp;Postings&nbsp;and&nbsp;Reports</a></li>
+<li><a href="/council.php">Legislative Council</a></li>
+<li><a href="/citizens.php">Citizens&#39; Interest</a></li>
+<li><a href="/publications.php">Publications</a></li>
+		    	</ul>
+			</div>
+			<div id="search" class="nodisplay" style="height: 28px;"><div class="nodisplay" style="float:right; margin:6px 20px 0px 0;">
+							<!--<a style="color:#f7f4ec; height:15px;" href="#" onClick="rsswindow();"><img border=0 src="/images/lock.png" style="vertical-align: middle; width: 15px; height: 15px;">&nbsp;Staff&nbsp;Portal</a>-->
+<!--				<a style="color:#f7f4ec; height:15px;" href="/splashpage/splashpage.html"><img border=0 src="/images/lock.png" style="vertical-align: middle; width: 15px; height: 15px;">&nbsp;Staff&nbsp;Portal</a> -->
+				<a style="color:#f7f4ec; height:15px;" href="/onlineservices/index.php"><img border="0" src="/images/lock.png" style="vertical-align: middle; width: 15px; height: 15px;">&nbsp;Staff&nbsp;Portal</a>
+			<!--	<a style="color:#f7f4ec; height:15px;" href="/maintenance_portal.php"><img border=0 src="/images/lock.png" style="vertical-align: middle; width: 15px; height: 15px;">&nbsp;Staff&nbsp;Portal</a>-->
+						</div></div>
+			
+	
+				    <div id="submenu" class="nodisplay">
+		    	<ul>
+				<li><a href="/member.php?chamber=S"><span style="display:inline-block; padding-top:8px;">Members</span></a></li><li><a href="/member.php?chamber=S&order=O"><span style="display:inline-block; padding-top:8px;">Officers</span></a></li><li><a href="/committee.php?chamber=S">Standing<br>Comm.</a></li><li><a href="/publicationspage/JtSpecCommList.pdf">Joint<br>Comm.</a></li><li><a href="/email.php?chamber=S"><span style="display:inline-block; padding-top:8px;">Email</span></a></li><li class="selected"><a style="color:black;" href="/meetings.php?chamber=S"><span style="display:inline-block; padding-top:8px;">Meetings</span></a></li><li><a href="/sessphp/sencal.php"><span style="display:inline-block; padding-top:8px;">Calendars</span></a></li><li><a href="/sessphp/sjournal.php"><span style="display:inline-block; padding-top:8px;">Journals</span></a></li><li><a href="/sessphp/sintros.php"><span style="display:inline-block; padding-top:8px;">Introductions</span></a></li><li><a href="/delegations.php"><span style="display:inline-block; padding-top:8px;">Delegations</span></a></li><li><a href="/senatepage/senrule.php"><span style="display:inline-block; padding-top:8px;">Rules</span></a></li><li><a href="/senate/page/"><span style="display:inline-block; padding-top:8px;">Senate Page</span></a></li>				</ul>
+			</div>
+			<div id="sidebar" class="nodisplay">
+	<div id="vidlinks" style="height: 50px;">
+						<!--<img src="/images/videobutton12d.png">-->
+											<ul id="vidsidemenu">
+	<li id="vidinnermenu" style="font-size:16px; margin: 0 0 5px 0;">Chamber Video</li>
+<li id="sbroadcast" style="float: left; width:50%;">
+<a id="liveS" style="width: 100%; text-decoration:underline;" href="javascript:void(0);" onClick="live_stream('S', false, false, '0')">Senate</a><br><a id="liveaudioS" style="margin:-3px 0 0 0; text-decoration:underline; width: 100%; font-size: 8px;" href="javascript:void(0);" onClick="live_stream('S', false, false, '1');">(Audio Only)</a>
+</li>
+<li id="hbroadcast" style="float: left; width:50%;">
+<a id="liveH" style="width: 100%; text-decoration:underline;" href="javascript:void(0);" onClick="live_stream('H', false, false, '0')">House</a><br><a id="liveaudioH" style="margin:-3px 0 0 0; text-decoration:underline; width: 100%; font-size: 8px;" href="javascript:void(0);" onClick="live_stream('H', false, false, '1');">(Audio Only)</a>
+</li>
+						</ul>
+					</div>
+					<div id="commvidlinks"><a href="/video/schedule.php">Video&nbsp;Schedule</a><a style="border-top:1px solid #fff; padding-top:12px;" href="/video/archives.php">Video Archives</a></div>
+										<div id="sidemenu">
+						<ul id="innermenu">
+		
+							<li><a href="/howdoi.php">How do I...</a></li>
+										
+							
+								<li class="nolink" onMouseOver="var ele=document.getElementById('sidesearch'); if(ele){ele.style.display='block'; document.sidesearchform.searchtext.focus();}" onMouseOut="var ele=document.getElementById('sidesearch'); if(ele){ele.style.display='none';}"><div class="nolinkdiv">Quick Search</div>
+								<div id="sidesearch" class="sidesubmenu">
+									<form id="sidesearchform" name="sidesearchform" method="POST" action="/search.php">
+									<input type="hidden" name="search" value="side" />
+									<div class="topelement"><label for="searchtext"><span class="label">Search for:</span></label><input id="searchtext" name="searchtext" type="text"/><a id="searchlink2" href="javascript:void(0);" onClick="document.sidesearchform.submit();"><img id="searchicon" src="/images/searchbutton.png" alt="Search" title="Search"/></a></div>
+			<!--						<div><input type="checkbox" id="searchchoice_all" name="searchchoice_all" value="all" /><label for="searchchoice_all">All</label></div>-->
+									<div style="padding-left:20px;"><input type="radio" id="searchchoice_fullsite" name="category" value="FULLSITE" /><label for="searchchoice_fullsite">&nbsp;Full Site Search</label></div>
+									<div style="padding-left:20px;"><input type="radio" id="searchchoice_billnumber" name="category" value="BILL" /><label for="searchchoice_billnumber">&nbsp;Bill Number</label></div>
+									<div style="padding-left:20px;"><input type="radio" id="searchchoice_legislation" name="category" value="LEGISLATION" CHECKED /><label for="searchchoice_legislation">&nbsp;Legislation</label></div>
+									<div style="padding-left:20px;"><input type="radio" id="searchchoice_budget" name="category" value="BUDGET" /><label for="searchchoice_budget">&nbsp;Budget</label></div>
+									<div style="padding-left:20px;"><input type="radio" id="searchchoice_codeoflaws" name="category" value="CODEOFLAWS" /><label for="searchchoice_codeoflaws">&nbsp;Code of Laws</label></div>
+									<div style="padding-left:20px;"><input type="radio" id="searchchoice_codeofregs" name="category" value="CODEOFREGS" /><label for="searchchoice_codeofregs">&nbsp;Code of Regulations</label></div>
+									<div style="padding-left:20px;"><input type="radio" id="searchchoice_constitution" name="category" value="CONSTITUTION" /><label for="searchchoice_constitution">&nbsp;Constitution</label></div>
+									<div style="padding-left:20px;"><input type="radio" id="searchchoice_housejournals" name="category" value="HOUSEJOURNALS" /><label for="searchchoice_housejournals">&nbsp;House Journals</label></div>
+									<div style="padding-left:20px;"><input type="radio" id="searchchoice_senatejournals" name="category" value="SENATEJOURNALS" /><label for="searchchoice_senatejournals">&nbsp;Senate Journals</label></div>
+									<div class="bottomelement" style="padding-left:20px;"><input type="radio" id="searchchoice_billsummary" name="category" value="SUMMARY" /><label for="searchchoice_billsummary">&nbsp;LSA Bill Summary</label></div>
+								</form>
+									
+								</div>
+							</li>
+							<li><a href="/legislatorssearch.php">Find Your Legislators</a></li>
+							<li id="contactLegislatorLink"><a href="/email.php?chamber=B">Contact Your Legislator</a></li>
+									
+							<li><a href="/legislation.php">Legislation</a></li>
+							<li><a href="/listtracking/main.php" target="LTS">Track Legislation</a></li>
+							<li><a href="/multicriteria2/search.php" target="MCS">Multi-Criteria Search</a></li>
+									<!--<li><a href="#" onclick="multisearchwindow('INTROBOTH');">Multi-Criteria Search</a></li>-->
+									<!--<li><a href="#" onclick="multisearchwindow('INTROMANUAL');">Multi-Criteria Search</a></li>-->
+									<li><a href="/research.php">Research</a></li>
+	
+								<li class="nolink" onMouseOver="var ele=document.getElementById('law'); if(ele){ele.style.display='block';}" onMouseOut="var ele=document.getElementById('law'); if(ele){ele.style.display='none';}"><div class="nolinkdiv">South Carolina Law</div> 
+								<div id="law" class="sidesubmenu">
+									<div class="sidediv topelement"><a href="/newlaws.php">Ratifications &amp; Acts</a></div>
+									<div class="sidediv"><a href="/code/statmast.php">Code of Laws</a></div>
+									<div class="sidediv"><a href="/coderegs/statmast.php">Code of Regulations</a></div>
+									<div class="sidediv"><a href="/scconstitution/scconst.php">Constitution</a></div>
+									<div class="sidediv bottomelement"><a href="/state_register.php">State Register</a></div>
+								</div>
+							</li>
+										<li class="nolink" onMouseOver="var ele=document.getElementById('manual'); if(ele){ele.style.display='block';}" onMouseOut="var ele=document.getElementById('manual'); if(ele){ele.style.display='none';}"><div class="nolinkdiv">Legislative Manual</div>
+								<div id="manual" class="sidesubmenu">
+								
+<!--									<div class="sidediv topelement"><a href="https://web.sc.gov/LSAShoppingcart/Default.aspx" target="_blank">Purchase Manual</a></div>-->
+								
+<!--									<div class="sidediv topelement"><a href="https://secure.scstatehouse.gov/cgi-bin/webstore.exe" target="_blank">Purchase Manual</a></div>-->
+									<div class="sidediv topelement"><a href="javascript:#" onClick="alert('We are sorry, but we are unable to process online transactions at this time.\n\nIf you would still like to make a purchase, please contact us directly at (803) 212-4490 during normal business hours (8:30am - 5:00pm EST).');">Purchase Manual</a></div>
+									<div class="sidediv bottomelement"><a href="/man25/manual25.php">View Manual Online</a></div>
+								</div>
+							</li>
+							<li><a href="http://www.studentconnection.scstatehouse.gov">Student Connection</a></li>
+							<li><a href="/visit.php">Visiting the State House</a></li>
+							<li><a href="/archives.php">Archives</a></li>
+							<li><a href="http://www.sc.gov/Agency-Listing" target="_blank">State Agency Websites</a></li>
+							<!--<li><a href="/stateagencysites.php">State Agency Websites</a></li>-->
+							<li><a href="/citizensinterestpage/media.php">Media Links</a></li>
+				 		</ul>
+			    	</div>
+	
+					<div id="side_ad">
+						<A href="http://www.sc.gov/" target="_blank"><img border=0 src="/images/scgov3.jpg" alt="SC.gov" title="SC.gov" /></a>
+													<A href="http://www.statelibrary.sc.gov" target="_blank"><img border=0 src="/images/scsl_logo_rgb_web.png" alt="StateLibrary.SC.gov" title="StateLibrary.SC.gov" /></a>
+											</div>	    	
+			</div>
+
+	
+	<script type="text/javascript"> 
+		if ( '' === '1'){
+		 	
+			var link = document.getElementById('contactLegislatorLink');
+			if (link != 'undefined' && link != null){
+				link.style.display = 'none'; 
+				link.style.visibility = 'hidden';
+			}
+		}
+		if ( '' === '1'){
+		 	setTimeout(function(){
+				var link2 = document.getElementById('sendMsgLink');
+				if (link2 != 'undefined' && link2 != null){
+					link2.style.display = 'none'; 
+					link2.style.visibility = 'hidden';
+				};
+			}, 20);
+			
+		}  
+	</script>
+<div class="mainwidepanel">
+            <div id="breadcrumbs">
+                            <span><a href="/senate.php">Senate</a> &gt; Meeting Schedule</span>
+                            </div>
+		            <h2 class="barheader" style="padding-left:25px;">
+            Senate Meeting Schedule<!--<a style="float:right; margin-right:25px;" href="/pagefeeds.php"><img border=0 style="align:right;" src="/images/rss-28.png" /></a>--><br><span style="font-size:12px;"><a class="nodisplay" style="text-decoration:none; margin:0 5px; font-size:0.9em" href="/meetings.php?chamber=S&archiveweek=1" alt="Go to Prior Week"> Previous < </a>Week of March 16, 2026</span>        </h2>
+<!--        <div class="scheduletwitter" style="margin-top:-10px;"><a style="margin-left:5px; color: #ffffff;" href="https://twitter.com/scSenate" target="_blank"><img border=0 title="Follow on Twitter" src="/images/social-icon-twitter.png" />&nbsp;&nbsp;&nbsp;Follow on Twitter</a></div>-->
+		<div id="selectionandprint" style="margin-top:5px;">
+			<form id="datechoiceform" name="datechoiceform" style="float:left; width:50%;">
+				<input type="hidden" name="chamber" value="S">
+				<label for="selecteddate">Week of </label>
+				<input type="date" id="selecteddate" name="selecteddate" style="font-size:0.9em;" value="2026-03-16" onchange="this.form.submit();" min="2011-10-10" max="2026-03-17">
+			</form>
+			<a class="nodisplay" style="float:right; text-decoration:underline; margin:0 5px 0 0;" href="/meetings.php?chamber=S&PRINT=1" target="_blank" onClick="return checkreader('');">Printer Friendly</a><br><br>
+
+					</div>
+            <div id="contentsection" >
+    
+<ul style="margin:20px 0 0 0; list-style-type: none;"><a name="16150"></a><span style="font-weight:bold;  text-decoration:underline;">Monday, March 16, 2026</span><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">10:00 am</span> -- Blatt Room 433 -- SC Education Oversight Academic Standards & Assessments Subcommittee<br><div style="margin:0 0 0 20px;"><a href="/agendas/126j16150.pdf" target="_blank">Agenda Available</a></div>
+<div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/05/2026 at 2:56 pm<br />
+</div>
+</div>
+</li>
+</ul>
+<ul style="margin:20px 0 0 0; list-style-type: none;"><a name="15903"></a><span style="font-weight:bold;  text-decoration:underline;">Tuesday, March 17, 2026</span><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">9:00 am</span> -- Blatt Room 108 -- Test Meeting -- Please disregard<br><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 02/06/2026 at 4:02 pm<br />
+</div>
+</div>
+</li>
+<a name="16194"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">10:00 am</span> -- Gressette Room 407 -- Finance Natural Resources and Economic Development Subcommittee Budget Hearing<br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16194.pdf" target="_blank">Agenda Available</a></div>
+<div id="archive" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="archive_stream(16194, '1')">Archive Broadcast</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/13/2026 at 10:28 am<br />
+Scheduled for Live Broadcast on 03/13/2026 at 11:14 am<br />
+</div>
+</div>
+</li>
+<a name="16195"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">10:00 am</span> -- Gressette Room 207 -- Finance Health and Human Services Budget Hearings<br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16195.pdf" target="_blank">Agenda Available</a></div>
+<div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/13/2026 at 11:11 am<br />
+</div>
+</div>
+</li>
+<a name="16189"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">12:00 pm</span> -- State House, Senate Chamber -- Senate<br><div id="live'S'" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream('S', false, false, '0')">Live Broadcast</a></div><div id="liveaudio'S'" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream('S', false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Scheduled for Live Broadcast on 03/12/2026 at 1:59 pm<br />
+Meeting added on 03/12/2026 at 1:59 pm<br />
+</div>
+</div>
+</li>
+<a name="16196"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">3:00 pm</span> -- Gressette Room 105 -- Senate Finance Committee<br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16196.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16196" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16196, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16196" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16196, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/13/2026 at 1:12 pm<br />
+Scheduled for Live Broadcast on 03/13/2026 at 1:22 pm<br />
+</div>
+</div>
+</li>
+<a name="16203"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">Fifteen Minutes Upon Adjournment</span> -- Gressette Room 308 -- Judiciary Subcommittee on <a href="/billsearch.php?billnumbers=724&session=126&summary=B&headerfooter=1">724</a>, <a href="/billsearch.php?billnumbers=902&session=126&summary=B&headerfooter=1">902</a><br><div style="margin:0 0 0 20px;">(Contact Info: 803-212-6627)</div>
+<div style="margin:0 0 0 20px;"><a href="/agendas/126s16203.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16203" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16203, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16203" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16203, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/16/2026 at 3:03 pm<br />
+Scheduled for Live Broadcast on 03/16/2026 at 4:21 pm<br />
+</div>
+</div>
+</li>
+</ul>
+<ul style="margin:20px 0 0 0; list-style-type: none;"><a name="16204"></a><span style="font-weight:bold;  text-decoration:underline;">Wednesday, March 18, 2026</span><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">9:00 am</span> -- Gressette Room 105 -- Judiciary Subcommittee on <a href="/billsearch.php?billnumbers=56&session=126&summary=B&headerfooter=1">56</a>, <a href="/billsearch.php?billnumbers=903&session=126&summary=B&headerfooter=1">903</a>, <a href="/billsearch.php?billnumbers=983&session=126&summary=B&headerfooter=1">983</a>, <a href="/billsearch.php?billnumbers=1005&session=126&summary=B&headerfooter=1">1005</a>, <a href="/billsearch.php?billnumbers=3387&session=126&summary=B&headerfooter=1">3387</a>, <a href="/billsearch.php?billnumbers=5097&session=126&summary=B&headerfooter=1">5097</a><br><div style="margin:0 0 0 20px;">(Contact Info: 803-212-6627)</div>
+<div style="margin:0 0 0 20px;"><a href="/agendas/126s16204.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16204" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16204, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16204" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16204, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/16/2026 at 3:39 pm<br />
+Scheduled for Live Broadcast on 03/16/2026 at 4:22 pm<br />
+</div>
+</div>
+</li>
+<a name="16187"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">9:30 am</span> -- Gressette Room 308 -- Finance Constitutional Subcommittee<br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16187.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16187" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16187, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16187" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16187, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/12/2026 at 11:42 am<br />
+Scheduled for Live Broadcast on 03/12/2026 at 1:06 pm<br />
+</div>
+</div>
+</li>
+<a name="16071"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">10:00 am</span> -- Gressette Room 207 -- Finance K-12 Education Subcommittee Budget Hearing<br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16071.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16071" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16071, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16071" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16071, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 02/24/2026 at 5:00 pm<br />
+Scheduled for Live Broadcast on 02/25/2026 at 2:37 pm<br />
+</div>
+</div>
+</li>
+<a name="16171"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">10:00 am</span> -- Gressette Room 307 -- Fish, Game and Forestry Subcommittee on <a href="/billsearch.php?billnumbers=532&session=126&summary=B&headerfooter=1">532</a>, <a href="/billsearch.php?billnumbers=972&session=126&summary=B&headerfooter=1">972</a>, <a href="/billsearch.php?billnumbers=3872&session=126&summary=B&headerfooter=1">3872</a><br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16171.pdf" target="_blank">Agenda Available</a></div>
+<div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/09/2026 at 11:41 am<br />
+</div>
+</div>
+</li>
+<a name="16186"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">10:00 am</span> -- Gressette Room 407 -- Senate Education Subcommittee on <a href="/billsearch.php?billnumbers=708&session=126&summary=B&headerfooter=1">708</a>, <a href="/billsearch.php?billnumbers=3195&session=126&summary=B&headerfooter=1">3195</a>, <a href="/billsearch.php?billnumbers=3258&session=126&summary=B&headerfooter=1">3258</a>, <a href="/billsearch.php?billnumbers=3453&session=126&summary=B&headerfooter=1">3453</a>, <a href="/billsearch.php?billnumbers=5064&session=126&summary=B&headerfooter=1">5064</a><br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16186.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16186" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16186, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16186" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16186, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/12/2026 at 10:12 am<br />
+Scheduled for Live Broadcast on 03/12/2026 at 10:48 am<br />
+</div>
+</div>
+</li>
+<a name="16193"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">10:00 am</span> -- Gressette Room 209 -- Senate Medical Affairs Subcommittee<br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16193.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16193" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16193, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16193" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16193, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/13/2026 at 8:25 am<br />
+Scheduled for Live Broadcast on 03/17/2026 at 12:15 pm<br />
+</div>
+</div>
+</li>
+<a name="16197"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">10:00 am</span> -- Gressette Room 408 -- L.C.I. Regulatory and Local Government Subcommittee<br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16197.pdf" target="_blank">Agenda Available</a></div>
+<div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/13/2026 at 1:47 pm<br />
+</div>
+</div>
+</li>
+<a name="16170"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">11:00 am</span> -- Gressette Room 209 -- Banking and Insurance, Insurance Subcommittee on <a href="/billsearch.php?billnumbers=767&session=126&summary=B&headerfooter=1">767</a><br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16170.pdf" target="_blank">Agenda Available</a></div>
+<div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/09/2026 at 9:55 am<br />
+</div>
+</div>
+</li>
+<a name="16190"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">11:00 am</span> -- Gressette Room 308 -- Senate Transportation Full Committee<br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16190.pdf" target="_blank">Agenda Available</a></div>
+<div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/12/2026 at 2:03 pm<br />
+</div>
+</div>
+</li>
+<a name="16188"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">12:00 pm</span> -- Gressette Room 207 -- Finance Transportation and Regulatory Subcommittee<br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16188.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16188" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16188, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16188" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16188, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/12/2026 at 11:43 am<br />
+Scheduled for Live Broadcast on 03/12/2026 at 1:06 pm<br />
+</div>
+</div>
+</li>
+<a name="16191"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">12:00 pm</span> -- Gressette Room 105 -- FVS Child Welfare Subcommittee on <a href="/billsearch.php?billnumbers=770&session=126&summary=B&headerfooter=1">770</a><br><div style="margin:0 0 0 20px;">(Contact Info: (803) 212-6320)</div>
+<div style="margin:0 0 0 20px;"><a href="/agendas/126s16191.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16191" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16191, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16191" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16191, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/12/2026 at 3:40 pm<br />
+Scheduled for Live Broadcast on 03/12/2026 at 3:45 pm<br />
+</div>
+</div>
+</li>
+</ul>
+<ul style="margin:20px 0 0 0; list-style-type: none;"><a name="16184"></a><span style="font-weight:bold;  text-decoration:underline;">Thursday, March 19, 2026</span><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">9:00 am</span> -- Gressette Room 209 -- Medical Affairs Committee<br><div style="margin:0 0 0 20px;"><a href="/agendas/126s16184.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16184" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16184, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16184" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16184, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/11/2026 at 4:34 pm<br />
+Scheduled for Live Broadcast on 03/12/2026 at 1:07 pm<br />
+</div>
+</div>
+</li>
+<a name="16205"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">9:00 am</span> -- Gressette Room 105 -- Judiciary Subcommittee on <a href="/billsearch.php?billnumbers=765&session=126&summary=B&headerfooter=1">765</a>, <a href="/billsearch.php?billnumbers=915&session=126&summary=B&headerfooter=1">915</a>, <a href="/billsearch.php?billnumbers=3049&session=126&summary=B&headerfooter=1">3049</a><br><div style="margin:0 0 0 20px;">(Contact Info: 803-212-6627)</div>
+<div style="margin:0 0 0 20px;"><a href="/agendas/126s16205.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16205" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16205, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16205" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16205, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/16/2026 at 4:14 pm<br />
+Scheduled for Live Broadcast on 03/16/2026 at 4:24 pm<br />
+</div>
+</div>
+</li>
+<a name="15939"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">10:00 am</span> -- Gressette Room 407 -- Finance Higher Education Subcommittee Budget Hearing<br><div style="margin:0 0 0 20px;"><a href="/agendas/126s15939.pdf" target="_blank">Agenda Available</a></div>
+<div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/13/2026 at 3:27 pm<br />
+</div>
+</div>
+</li>
+<a name="16202"></a><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">10:00 am</span> -- Gressette Room 105 -- Judiciary Subcommittee on <a href="/billsearch.php?billnumbers=254&session=126&summary=B&headerfooter=1">254</a>, <a href="/billsearch.php?billnumbers=3021&session=126&summary=B&headerfooter=1">3021</a><br><div style="margin:0 0 0 20px;">(Contact Info: 803-212-6627)</div>
+<div style="margin:0 0 0 20px;"><a href="/agendas/126s16202.pdf" target="_blank">Agenda Available</a></div>
+<div id="live16202" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16202, false, false, '0')">Live Broadcast</a></div><div id="liveaudio16202" style="margin:0 0 0 20px;">
+<a href="javascript:void(0);" onClick="live_stream(16202, false, false, '1')">Live Broadcast - Audio Only</a></div><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/16/2026 at 12:32 pm<br />
+Scheduled for Live Broadcast on 03/16/2026 at 12:35 pm<br />
+</div>
+</div>
+</li>
+</ul>
+<ul style="margin:20px 0 0 0; list-style-type: none;"><span style="font-weight:bold;  text-decoration:underline;">Friday, March 20</span><br><div style="margin:5px 0 0 20px;">No Meetings Scheduled.</div></ul><hr style="margin:20px 0 0 0;" /><div style="margin:10px 0 20px 0; text-align:center;"><span style="font-weight:bold;">Additional Meetings</span><br>LSA has received notice of these additional meetings scheduled for the date shown.</div>
+<ul style="margin:20px 0 0 0; list-style-type: none;"><a name="16201"></a><span style="font-weight:bold;  text-decoration:underline;">Wednesday, March 25, 2026</span><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">9:30 am</span> -- Gressette Room 407 -- First Congressional District Delegation<br><div style="margin:0 0 0 20px;"><a href="/agendas/126j16201.pdf" target="_blank">Agenda Available</a></div>
+<div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 03/13/2026 at 4:24 pm<br />
+</div>
+</div>
+</li>
+</ul>
+<ul style="margin:20px 0 0 0; list-style-type: none;"><a name="15941"></a><span style="font-weight:bold;  text-decoration:underline;">Thursday, March 26, 2026</span><li style="margin:5px 0 15px 50px; text-indent:-30px;   list-style-type: none;"><span style="font-weight:bold; ">10:00 am</span> -- Gressette Room 407 -- Finance Higher Education Subcommittee Budget Hearing<br><div style="margin:0 0 0 20px; text-indent:0;"><span style="font-weight:bold;">REVISIONS:</span>
+<div style="margin:0 0 0 20px;">Meeting added on 02/11/2026 at 4:04 pm<br />
+</div>
+</div>
+</li>
+</ul><br>
+</div>
+<script language="javascript" type="text/javascript">
+    <!--
+    var xmlhttp=false;
+    xmlhttp = create_xml_object();
+
+//-->
+</script>
+					</div>		 <!-- mainwidepanel -->
+					
+				</div>		 <!-- pagebody -->
+				
+				<div id="footer" class="nodisplay" style="height: 30px;" onContextMenu="return false;">
+			<div id="footerdiv" style="margin:0;">
+				South Carolina Legislative Services Agency * 223 Blatt Building * 1105 Pendleton Street * Columbia, SC 29201<!-- * 803-212-4420--><br>
+				
+								<a href="/disclaimer.php">Disclaimer</a> * <a href="/policies.php">Policies</a> * <a href="/credits.php">Photo Credits</a> * <a href="/contact.php">Contact Us</a>
+							</div>
+		</div>
+		<div id="printfooter" class="printdisplay serifNormal" align=center style="font-size: 8pt;">
+			<br>
+			<br>
+			<hr>
+			Legislative Services Agency
+			<br>
+			h t t p : / / w w w . s c s t a t e h o u s e . g o v
+		</div>
+	
+		</div>	<!-- container or main in mobile page-->
+</body>
+</html>
+

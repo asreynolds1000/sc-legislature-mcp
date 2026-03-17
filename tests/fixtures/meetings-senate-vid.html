@@ -1,0 +1,583 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="/css/main.css" rel="stylesheet" type="text/css" media="all" />
+	<script type="text/javascript" src="/js/ajaxobj.js"></script>
+	<script type="text/javascript" src="/js/ajax.js"></script>
+	<script type="text/javascript" src="/js/xmlparser.js"></script>
+	<script type="text/javascript" src="/js/comm_meeting.js"></script>
+	<script type='text/javascript'>
+		var xmlhttp=false;
+		xmlhttp = create_xml_object();
+
+const receiveMessage = ({data}) => {
+	const {key, part} = data;
+	const element = document.getElementById('li' + key + (part - 1));
+  element?.scrollIntoView();
+};
+window.onmessage = receiveMessage;
+parent.postMessage({type:'listing'}, '*');
+
+		function changevideo(key, part)
+		{
+			var success;
+			try
+			{
+				window.parent.playvideo(key, part, 0);
+				var imgs = document.getElementsByTagName('img');
+				for (var i=0; i < imgs.length; i++)
+				{
+					if (imgs[i].id.substring(0, 5) == 'arrow')
+					{
+						imgs[i].style.visibility = 'hidden';
+					}
+				}
+			 	var arrow = document.getElementById('arrow'+key+(part-1));
+				if (arrow)
+				{
+					arrow.style.visibility = 'visible';
+				}
+				success = true;
+			}
+			catch(err)
+			{
+				success = false;
+			}
+			if (success) return;
+			var response = '';
+			var postdata = 'op=loadvid&KEY='+key+'&PART='+part;
+			doRequest(xmlhttp, 'POST', '/video/archives.php', false, null, postdata);
+			if (xmlhttp.status == 200)
+			{
+				response = xmlhttp.responseText;
+			}
+			if (response != '')
+			{
+				var videocommittee = getTextBetweenTags(response, 'VIDEOCOMMITTEE');
+				var videocommitteename = getTextBetweenTags(response, 'VIDEOCOMMITTEENAME');
+				var videochamber = getTextBetweenTags(response, 'VIDEOCHAMBER');
+				var videofile = getTextBetweenTags(response, 'VIDEOFILE');
+				var videotitle = getTextBetweenTags(response, 'VIDEOTITLE');
+				var videotimeandplace = getTextBetweenTags(response, 'VIDEOTIMEANDPLACE');
+				var imgs = document.getElementsByTagName('img');
+				for (var i=0; i < imgs.length; i++)
+				{
+					if (imgs[i].id.substring(0, 5) == 'arrow')
+					{
+						imgs[i].style.visibility = 'hidden';
+					}
+				}
+				var ele = parent.document.getElementById('videotitle');
+				if (ele)
+				{
+					ele.innerHTML = videotitle;
+				}
+				var ele2 = parent.document.getElementById('videotimeandplace');
+				if (ele2)
+				{
+					ele2.innerHTML = videotimeandplace;
+				}
+			 	var arrow = document.getElementById('arrow'+key+(part-1));
+				if (arrow)
+				{
+					arrow.style.visibility = 'visible';
+				}
+				parent.videokey = key;
+				parent.videopart = part;
+				parent.videochamber = videochamber;
+				parent.videocommittee = videocommittee;
+				parent.videocommitteename = videocommitteename;
+				var committeevideolink = parent.document.getElementById('committeevideolink');
+				if (committeevideolink)
+				{
+					committeevideolink.innerHTML = videocommitteename;
+				}
+				var preprocessedvideo = parent.document.getElementById('preprocessedvideo');
+				if (preprocessedvideo)
+				{
+					if (videofile.substr(0,10) === 'Recordings')
+					{
+						preprocessedvideo.style.display = '';
+					}
+					else
+					{
+						preprocessedvideo.style.display = 'none';
+					}
+				}
+				var downloadvideolink = parent.document.getElementById('downloadvideolink');
+				if (downloadvideolink)
+				{
+					if (videofile.substr(0,10) !== 'Recordings')
+					{
+						downloadvideolink.href = 'https://video.scstatehouse.gov/'+videofile;
+						downloadvideolink.style.display = '';
+					}
+					else
+					{
+						downloadvideolink.style.display = 'none';
+					}
+				}
+				var downloadvideolinkli = parent.document.getElementById('downloadvideolinkli');
+				if (downloadvideolinkli)
+				{
+					if (videofile.substr(0,10) !== 'Recordings')
+					{
+						downloadvideolinkli.style.listStyleType = '';
+					}
+					else
+					{
+						downloadvideolinkli.style.listStyleType = 'none';
+					}
+				}
+			}
+  	}
+	</script>
+</head>
+<body style="font-size:12px;">
+<div style="text-align:center; font-size:16px; font-weight:bold;">Video Archives by meeting time<br><a style="font-size:10px;" href="/meetings.php?op=vid&loc=databox&code=ALL&archiveyear=2026&current=&PART=1&orderby=Committee" target="linktarget">(Reorder by Body/Committee)</a></div><div style="margin-top:20px; padding:5px 0 5px 0; background-color:#8f7f68; color:white; font-weight:bold; text-align:center;">Select&nbsp;Year:&nbsp;<select id="archiveyear" onChange="var eles = document.getElementsByTagName('div'); for (var i=0; i < eles.length; i++){if (eles[i].id.substring(0, 3) == 'ayr'){eles[i].scrollTop = 0; eles[i].style.display = 'none';}} var ele = getElementById('ayr'+document.getElementById('archiveyear').options[document.getElementById('archiveyear').selectedIndex].value); if (ele){ele.style.display = 'block';}">
+<option value="2026" SELECTED>2026
+<option value="2025" >2025
+<option value="2024" >2024
+<option value="2023" >2023
+<option value="2022" >2022
+<option value="2021" >2021
+<option value="2020" >2020
+<option value="2019" >2019
+<option value="2018" >2018
+<option value="2017" >2017
+<option value="2016" >2016
+<option value="2015" >2015
+<option value="2014" >2014
+<option value="2013" >2013
+<option value="2012" >2012
+<option value="2011" >2011
+</select>
+</div>
+<ul style="margin:0; list-style-type: none; " onMouseOut="trackrow=''; highlight_row(false);"><div style="display:block; " id="ayr2026"><li id="li161940" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161940" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:48:01<br><a href="https://video.scstatehouse.gov/mp4/20260317SFinanceNaturalResourcesand16194_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16194, 1);">Tuesday, March 17, 2026&nbsp;&nbsp;10:00 am<br>Finance&nbsp;Committee -- Finance Natural Resources and Economic Development Subcommittee Budget Hearing</a></td>
+</tr></table>
+</li><li id="li161850" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161850" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">2:56:41<br><a href="https://video.scstatehouse.gov/mp4/20260312SSenate16185_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16185, 1);">Thursday, March 12, 2026&nbsp;&nbsp;11:00 am<br>Senate -- Senate</a></td>
+</tr></table>
+</li><li id="li161520" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161520" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:36:26<br><a href="https://video.scstatehouse.gov/mp4/20260312SFinanceKEducationSubcommittee16152_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16152, 1);">Thursday, March 12, 2026&nbsp;&nbsp;10:00 am<br>Finance&nbsp;Committee -- Finance K-12 Education Subcommittee Budget Hearing</a></td>
+</tr></table>
+</li><li id="li161760" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161760" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:48:41<br><a href="https://video.scstatehouse.gov/mp4/20260312SLaborCommerceandIndustryCommittee16176_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16176, 1);">Thursday, March 12, 2026&nbsp;&nbsp;9:00 am<br>Labor, Commerce and Industry&nbsp;Committee -- Labor, Commerce and Industry Committee</a></td>
+</tr></table>
+</li><li id="li161790" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161790" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">4:50:55<br><a href="https://video.scstatehouse.gov/mp4/20260311SSenate16179_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16179, 1);">Wednesday, March 11, 2026&nbsp;&nbsp;1:00 pm<br>Senate -- Senate</a></td>
+</tr></table>
+</li><li id="li161730" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161730" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:04:12<br><a href="https://video.scstatehouse.gov/mp4/20260311SFamilyandVeteransServicesFVSChildWelfare16173_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16173, 1);">Wednesday, March 11, 2026&nbsp;&nbsp;12:00 pm<br>Family and Veterans' Services&nbsp;Committee -- FVS Child Welfare Subcommittee</a></td>
+</tr></table>
+</li><li id="li161570" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161570" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:05:47<br><a href="https://video.scstatehouse.gov/mp4/20260311SFinanceConstitutionalSubcommittee16157_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16157, 1);">Wednesday, March 11, 2026&nbsp;&nbsp;11:00 am<br>Finance&nbsp;Committee -- Finance Constitutional Subcommittee</a></td>
+</tr></table>
+</li><li id="li161380" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161380" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:55:01<br><a href="https://video.scstatehouse.gov/mp4/20260311SBankingandInsuranceCommitteeonS16138_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16138, 1);">Wednesday, March 11, 2026&nbsp;&nbsp;11:00 am<br>Banking and Insurance&nbsp;Committee -- Banking and Insurance Committee on 342, 830, 851</a></td>
+</tr></table>
+</li><li id="li161810" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161810" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:44:54<br><a href="https://video.scstatehouse.gov/mp4/20260311HHouseofRepresentatives16181_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16181, 1);">Wednesday, March 11, 2026&nbsp;&nbsp;10:00 am<br>House of Representatives -- House of Representatives</a></td>
+</tr></table>
+</li><li id="li160850" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160850" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:40:11<br><a href="https://video.scstatehouse.gov/mp4/20260311SEducationSenateFull16085_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16085, 1);">Wednesday, March 11, 2026&nbsp;&nbsp;10:00 am<br>Education&nbsp;Committee -- Senate Education Full Committee on 692, 711, 3831, 4756</a></td>
+</tr></table>
+</li><li id="li161410" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161410" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:44:06<br><a href="https://video.scstatehouse.gov/mp4/20260311SMedicalAffairsSenateSubcommittee16141_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16141, 1);">Wednesday, March 11, 2026&nbsp;&nbsp;9:30 am<br>Medical Affairs&nbsp;Committee -- Senate Medical Affairs Subcommittee</a></td>
+</tr></table>
+</li><li id="li161560" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161560" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:55:16<br><a href="https://video.scstatehouse.gov/mp4/20260311SFamilyandVeteransServicesFamilyVeterans16156_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16156, 1);">Wednesday, March 11, 2026&nbsp;&nbsp;9:00 am<br>Family and Veterans' Services&nbsp;Committee -- Family & Veterans Services Committee</a></td>
+</tr></table>
+</li><li id="li161460" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161460" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:20:23<br><a href="https://video.scstatehouse.gov/mp4/20260311SEducationSenateSubcommittee16146_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16146, 1);">Wednesday, March 11, 2026&nbsp;&nbsp;9:00 am<br>Education&nbsp;Committee -- Senate Education Subcommittee on 863</a></td>
+</tr></table>
+</li><li id="li161530" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161530" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:45:38<br><a href="https://video.scstatehouse.gov/mp4/20260310SFinanceSalesandIncome16153_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16153, 1);">Tuesday, March 10, 2026&nbsp;&nbsp;3:00 pm<br>Finance&nbsp;Committee -- Finance Sales and Income Tax Subcommittee</a></td>
+</tr></table>
+</li><li id="li161550" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161550" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:27:52<br><a href="https://video.scstatehouse.gov/mp4/20260310SJudiciaryFullCommittee16155_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16155, 1);">Tuesday, March 10, 2026&nbsp;&nbsp;Fifteen Minutes Upon Adjournment<br>Judiciary&nbsp;Committee -- Full Judiciary Committee on 175, 504, 808, 823, 829, 922, 3020, 3285, 4720, 4763</a></td>
+</tr></table>
+</li><li id="li161450" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161450" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">3:11:48<br><a href="https://video.scstatehouse.gov/mp4/20260310SSenate16145_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16145, 1);">Tuesday, March 10, 2026&nbsp;&nbsp;12:00 pm<br>Senate -- Senate</a></td>
+</tr></table>
+</li><li id="li161720" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161720" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">11:55:20<br><a href="https://video.scstatehouse.gov/mp4/20260310HHouseofRepresentatives16172_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16172, 1);">Tuesday, March 10, 2026&nbsp;&nbsp;9:00 am<br>House of Representatives -- House of Representatives</a></td>
+</tr></table>
+</li><li id="li161390" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161390" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:57:47<br><a href="https://video.scstatehouse.gov/mp4/20260310SAgricultureandNaturalResourcesSenateSubcommittee16139_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16139, 1);">Tuesday, March 10, 2026&nbsp;&nbsp;9:00 am<br>Agriculture and Natural Resources&nbsp;Committee -- Senate Agriculture and Natural Resources Subcommittee on 867</a></td>
+</tr></table>
+</li><li id="li161440" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161440" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">5:30:11<br><a href="https://video.scstatehouse.gov/mp4/20260309HHouseofRepresentatives16144_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16144, 1);">Monday, March 9, 2026&nbsp;&nbsp;1:00 pm<br>House of Representatives -- House of Representatives</a></td>
+</tr></table>
+</li><li id="li161300" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161300" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:40:43<br><a href="https://video.scstatehouse.gov/mp4/20260305HMedMilPublicMunAffrsMMunicipaland16130_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16130, 1);">Thursday, March 5, 2026&nbsp;&nbsp;Immediately upon adjournment of the House<br>Medical, Military, Public and Municipal Affairs&nbsp;Committee -- 3-M Municipal and Public Affairs on 4293</a></td>
+</tr></table>
+</li><li id="li160840" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160840" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:32:30<br><a href="https://video.scstatehouse.gov/mp4/20260305SFinanceConstitutionalBudgetSubcommittee16084_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16084, 1);">Thursday, March 5, 2026&nbsp;&nbsp;Upon adjournment of the Senate<br>Finance&nbsp;Committee -- Finance Constitutional Budget Subcommittee</a></td>
+</tr></table>
+</li><li id="li159310" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow159310" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">5:26:53<br><a href="https://video.scstatehouse.gov/mp4/20260305JCollegeandUniversityTrusteeScreening15931_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(15931, 1);">Thursday, March 5, 2026&nbsp;&nbsp;Immediately upon adjournment of the House or Senate whichever is later<br>College and University Trustee Screening Commission</a></td>
+</tr></table>
+</li><li id="li161420" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161420" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:14:27<br><a href="https://video.scstatehouse.gov/mp4/20260305SSenate16142_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16142, 1);">Thursday, March 5, 2026&nbsp;&nbsp;11:00 am<br>Senate -- Senate</a></td>
+</tr></table>
+</li><li id="li161430" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161430" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:53:04<br><a href="https://video.scstatehouse.gov/mp4/20260305HHouseofRepresentatives16143_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16143, 1);">Thursday, March 5, 2026&nbsp;&nbsp;10:00 am<br>House of Representatives -- House of Representatives</a></td>
+</tr></table>
+</li><li id="li161130" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161130" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:43:15<br><a href="https://video.scstatehouse.gov/mp4/20260305SMedicalAffairsCommittee16113_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16113, 1);">Thursday, March 5, 2026&nbsp;&nbsp;10:00 am<br>Medical Affairs&nbsp;Committee -- Medical Affairs Committee</a></td>
+</tr></table>
+</li><li id="li161400" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161400" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:01:47<br><a href="https://video.scstatehouse.gov/mp4/20260305HRulesHouseCommittee16140_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16140, 1);">Thursday, March 5, 2026&nbsp;&nbsp;9:45 am<br>Rules&nbsp;Committee -- House Rules Committee</a></td>
+</tr></table>
+</li><li id="li160860" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160860" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:19:50<br><a href="https://video.scstatehouse.gov/mp4/20260305SJudiciarySubcommitteeonS16086_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16086, 1);">Thursday, March 5, 2026&nbsp;&nbsp;9:30 am<br>Judiciary&nbsp;Committee -- Judiciary Subcommittee on 254, 3021</a></td>
+</tr></table>
+</li><li id="li161350" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161350" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:56:24<br><a href="https://video.scstatehouse.gov/mp4/20260305SFamilyandVeteransServicesFVSChildWelfare16135_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16135, 1);">Thursday, March 5, 2026&nbsp;&nbsp;9:00 am<br>Family and Veterans' Services&nbsp;Committee -- FVS Child Welfare Subcommittee on 710, 777</a></td>
+</tr></table>
+</li><li id="li161270" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161270" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:54:47<br><a href="https://video.scstatehouse.gov/mp4/20260305SCorrectionsandPenologySenateCommittee16127_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16127, 1);">Thursday, March 5, 2026&nbsp;&nbsp;9:00 am<br>Corrections and Penology&nbsp;Committee -- Senate Corrections and Penology Committee</a></td>
+</tr></table>
+</li><li id="li161220" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161220" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:32:05<br><a href="https://video.scstatehouse.gov/mp4/20260305HLaborCommerceandIndustryLCIFullCommittee16122_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16122, 1);">Thursday, March 5, 2026&nbsp;&nbsp;9:00 am<br>Labor, Commerce and Industry&nbsp;Committee -- L.C.I. Full Committee</a></td>
+</tr></table>
+</li><li id="li161110" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161110" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:40:52<br><a href="https://video.scstatehouse.gov/mp4/20260305HWaysandMeansBudgetSubcommitteeof16111_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16111, 1);">Thursday, March 5, 2026&nbsp;&nbsp;9:00 am<br>Ways and Means&nbsp;Committee -- Budget Subcommittee of the House Ways and Means Committee</a></td>
+</tr></table>
+</li><li id="li160880" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160880" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:55:51<br><a href="https://video.scstatehouse.gov/mp4/20260305HMedMilPublicMunAffrsMMedicaland16088_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16088, 1);">Thursday, March 5, 2026&nbsp;&nbsp;9:00 am<br>Medical, Military, Public and Municipal Affairs&nbsp;Committee -- 3-M Medical and Health Affairs on 5013, 5194</a></td>
+</tr></table>
+</li><li id="li160750" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160750" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:20:31<br><a href="https://video.scstatehouse.gov/mp4/20260305HRegAdminProcAIandCybersecurityEducationandAdministrative16075_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16075, 1);">Thursday, March 5, 2026&nbsp;&nbsp;9:00 am<br>Regulations, Admin. Procedures, Artificial Intelligence and Cybersecurity&nbsp;Committee -- Education and Administrative Subcommittee of House Regulations, Administrative Procedures, Artificial Intelligence and Cybersecurity Committee</a></td>
+</tr></table>
+</li><li id="li161370" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161370" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">5:36:11<br><a href="https://video.scstatehouse.gov/mp4/20260304SSenate16137_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16137, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;11:45 am<br>Senate -- Senate</a></td>
+</tr></table>
+</li><li id="li161340" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161340" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:17:37<br><a href="https://video.scstatehouse.gov/mp4/20260304SJudiciarySubcommitteeonS16134_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16134, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;11:00 am<br>Judiciary&nbsp;Committee -- Judiciary Subcommittee on 632, 960</a></td>
+</tr></table>
+</li><li id="li161360" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161360" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">7:25:03<br><a href="https://video.scstatehouse.gov/mp4/20260304HHouseofRepresentatives16136_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16136, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;10:00 am<br>House of Representatives -- House of Representatives</a></td>
+</tr></table>
+</li><li id="li160890" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160890" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:50:38<br><a href="https://video.scstatehouse.gov/mp4/20260304SFishGameandForestryCommittee16089_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16089, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;10:00 am<br>Fish, Game and Forestry&nbsp;Committee -- Fish, Game and Forestry Committee</a></td>
+</tr></table>
+</li><li id="li160700" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160700" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:57:04<br><a href="https://video.scstatehouse.gov/mp4/20260304SEducationSenateSubcommittee16070_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16070, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;10:00 am<br>Education&nbsp;Committee -- Senate Education Subcommittee on Document Nos. 5371, 5402, 5403, 5405, 5412, 5433 and 5443.</a></td>
+</tr></table>
+</li><li id="li160790" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160790" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:26:35<br><a href="https://video.scstatehouse.gov/mp4/20260304STransportationSenateFull16079_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16079, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;9:30 am<br>Transportation&nbsp;Committee -- Senate Transportation Full Committee</a></td>
+</tr></table>
+</li><li id="li160200" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160200" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:43:32<br><a href="https://video.scstatehouse.gov/mp4/20260304SMedicalAffairsSenateSubcommittee16020_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16020, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;9:30 am<br>Medical Affairs&nbsp;Committee -- Senate Medical Affairs Subcommittee</a></td>
+</tr></table>
+</li><li id="li161210" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161210" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:19:12<br><a href="https://video.scstatehouse.gov/mp4/20260304HLaborCommerceandIndustryLCIBankingand16121_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16121, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;9:00 am<br>Labor, Commerce and Industry&nbsp;Committee -- L.C.I. Banking and Insurance Subcommittee</a></td>
+</tr></table>
+</li><li id="li161160" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161160" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:49:50<br><a href="https://video.scstatehouse.gov/mp4/20260304HJudiciaryCriminalLawsSubcommittee16116_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16116, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;9:00 am<br>Judiciary&nbsp;Committee -- Judiciary Criminal Laws Subcommittee on 3034, 4292, 5058</a></td>
+</tr></table>
+</li><li id="li161090" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161090" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:23:22<br><a href="https://video.scstatehouse.gov/mp4/20260304SJudiciarySubcommitteeonS16109_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16109, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;9:00 am<br>Judiciary&nbsp;Committee -- Judiciary Subcommittee on 922</a></td>
+</tr></table>
+</li><li id="li160870" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160870" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:29:10<br><a href="https://video.scstatehouse.gov/mp4/20260304HMedMilPublicMunAffrsMMilitaryand16087_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16087, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;9:00 am<br>Medical, Military, Public and Municipal Affairs&nbsp;Committee -- 3-M Military and Veterans Affairs on 4974</a></td>
+</tr></table>
+</li><li id="li160150" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160150" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:56:12<br><a href="https://video.scstatehouse.gov/mp4/20260304SFamilyandVeteransServicesFVSChildWelfare16015_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16015, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;9:00 am<br>Family and Veterans' Services&nbsp;Committee -- FVS Child Welfare Subcommittee on 540</a></td>
+</tr></table>
+</li><li id="li160730" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160730" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:53:17<br><a href="https://video.scstatehouse.gov/mp4/20260304HGovtEfficiencyandLegOversightEconomicDevelopmentTransportation16073_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16073, 1);">Wednesday, March 4, 2026&nbsp;&nbsp;8:30 am<br>Government Efficiency and Legislative Oversight&nbsp;Committee -- Economic Development, Transportation and Natural Resources Subcommittee of the Government Efficiency and Legislative Oversight Committee</a></td>
+</tr></table>
+</li><li id="li161260" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161260" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:13:08<br><a href="https://video.scstatehouse.gov/mp4/20260303HWaysandMeansFullCommittee16126_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16126, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;4:00 pm<br>Ways and Means&nbsp;Committee -- Full Ways and Means Committee</a></td>
+</tr></table>
+</li><li id="li161290" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161290" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:48:28<br><a href="https://video.scstatehouse.gov/mp4/20260303SJudiciarySubcommitteeonS16129_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16129, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;3:30 pm<br>Judiciary&nbsp;Committee -- Judiciary Subcommittee on 724, 902, 936</a></td>
+</tr></table>
+</li><li id="li161200" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161200" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:24:25<br><a href="https://video.scstatehouse.gov/mp4/20260303HLaborCommerceandIndustryLCIRealEstate16120_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16120, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;Upon Adjournment of the LCI Banking and Insurance Subcommittee meeting<br>Labor, Commerce and Industry&nbsp;Committee -- L.C.I. Real Estate Subcommittee</a></td>
+</tr></table>
+</li><li id="li160770" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160770" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:37:37<br><a href="https://video.scstatehouse.gov/mp4/20260303HRegAdminProcAIandCybersecurityRegulationsAdminProcedures16077_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16077, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;3:30 pm<br>Regulations, Admin. Procedures, Artificial Intelligence and Cybersecurity&nbsp;Committee -- Regulations, Admin. Procedures, Artificial Intelligence and Cybersecurity</a></td>
+</tr></table>
+</li><li id="li161190" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161190" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:50:06<br><a href="https://video.scstatehouse.gov/mp4/20260303SLaborCommerceandIndustryLCISpecialSubcommittee16119_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16119, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;3:00 pm<br>Labor, Commerce and Industry&nbsp;Committee -- L.C.I. Special Subcommittee</a></td>
+</tr></table>
+</li><li id="li161170" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161170" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:21:51<br><a href="https://video.scstatehouse.gov/mp4/20260303SFinancePropertyTaxSubcommittee16117_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16117, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;3:00 pm<br>Finance&nbsp;Committee -- Finance Property Tax Subcommittee</a></td>
+</tr></table>
+</li><li id="li161070" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161070" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:30:27<br><a href="https://video.scstatehouse.gov/mp4/20260303HJudiciaryTortReformAd16107_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16107, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;3:00 pm<br>Judiciary&nbsp;Committee -- Tort Reform Ad Hoc Committee on 4544, 4670, 5183</a></td>
+</tr></table>
+</li><li id="li161060" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161060" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:32:01<br><a href="https://video.scstatehouse.gov/mp4/20260303HAgrNatResEnvironAffrsWildlifeSubcommitteeof16106_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16106, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;1.5 hours upon adjournment of the House<br>Agriculture, Natural Resources & Environmental Affairs&nbsp;Committee -- Wildlife Subcommittee of the Agriculture, Natural Resources and Environmental Affairs Committee</a></td>
+</tr></table>
+</li><li id="li161180" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161180" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:17:11<br><a href="https://video.scstatehouse.gov/mp4/20260303HLaborCommerceandIndustryLCIBankingand16118_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16118, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;1.5 hours after adjournment of the House<br>Labor, Commerce and Industry&nbsp;Committee -- L.C.I. Banking and Insurance Subcommittee</a></td>
+</tr></table>
+</li><li id="li161080" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161080" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:36:33<br><a href="https://video.scstatehouse.gov/mp4/20260303HEdandPublicWorksEPWKSubcommittee16108_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16108, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;1 Hours Upon Adjournment of the House<br>Education and Public Works&nbsp;Committee -- E.P.W. K-12 Subcommittee</a></td>
+</tr></table>
+</li><li id="li160820" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160820" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">2:11:02<br><a href="https://video.scstatehouse.gov/mp4/20260303SSenate16082_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16082, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;12:00 pm<br>Senate -- Senate</a></td>
+</tr></table>
+</li><li id="li160800" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160800" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">2:07:51<br><a href="https://video.scstatehouse.gov/mp4/20260303HHouseofRepresentatives16080_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16080, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;12:00 pm<br>House of Representatives -- House of Representatives</a></td>
+</tr></table>
+</li><li id="li161250" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161250" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:02:24<br><a href="https://video.scstatehouse.gov/mp4/20260303HWaysandMeansRevenuePolicyLegislative16125_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16125, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;11:30 am<br>Ways and Means&nbsp;Committee -- Revenue Policy Legislative Subcommittee of the House Ways and Means Committee</a></td>
+</tr></table>
+</li><li id="li161150" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161150" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:16:43<br><a href="https://video.scstatehouse.gov/mp4/20260303HLaborCommerceandIndustryLCIBusinessand16115_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16115, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;10:30 am<br>Labor, Commerce and Industry&nbsp;Committee -- L.C.I. Business and Commerce Subcommittee</a></td>
+</tr></table>
+</li><li id="li160830" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160830" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:11:18<br><a href="https://video.scstatehouse.gov/mp4/20260303SEducationSenateSubcommittee16083_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16083, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;10:30 am<br>Education&nbsp;Committee -- Senate Education Subcommittee on 692</a></td>
+</tr></table>
+</li><li id="li161100" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow161100" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:04:09<br><a href="https://video.scstatehouse.gov/mp4/20260303SFinanceNaturalResourcesand16110_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16110, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;10:00 am<br>Finance&nbsp;Committee -- Finance Natural Resources and Economic Development Subcommittee Budget Hearing</a></td>
+</tr></table>
+</li><li id="li160100" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160100" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">2:03:44<br><a href="https://video.scstatehouse.gov/mp4/20260303SAgricultureandNaturalResourcesSenateSubcommittee16010_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16010, 1);">Tuesday, March 3, 2026&nbsp;&nbsp;9:00 am<br>Agriculture and Natural Resources&nbsp;Committee -- Senate Agriculture and Natural Resources Subcommittee on 867</a></td>
+</tr></table>
+</li><li id="li159320" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow159320" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">7:56:28<br><a href="https://video.scstatehouse.gov/mp4/20260302JCollegeandUniversityTrusteeScreening15932_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(15932, 1);">Monday, March 2, 2026&nbsp;&nbsp;11:00 am<br>College and University Trustee Screening Commission</a></td>
+</tr></table>
+</li><li id="li160720" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160720" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:23:32<br><a href="https://video.scstatehouse.gov/mp4/20260226JAgricultureNaturalResourcesandEnvironmental16072_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16072, 1);">Thursday, February 26, 2026&nbsp;&nbsp;12:30 pm<br>Agriculture, Natural Resources and Environmental Affairs Committee</a></td>
+</tr></table>
+</li><li id="li160740" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160740" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">2:33:42<br><a href="https://video.scstatehouse.gov/mp4/20260226SSenate16074_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16074, 1);">Thursday, February 26, 2026&nbsp;&nbsp;11:00 am<br>Senate -- Senate</a></td>
+</tr></table>
+</li><li id="li160760" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160760" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:29:12<br><a href="https://video.scstatehouse.gov/mp4/20260226HHouseofRepresentatives16076_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16076, 1);">Thursday, February 26, 2026&nbsp;&nbsp;10:00 am<br>House of Representatives -- House of Representatives</a></td>
+</tr></table>
+</li><li id="li160580" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160580" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:34:29<br><a href="https://video.scstatehouse.gov/mp4/20260226SJudiciarySenateSubcommittee16058_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16058, 1);">Thursday, February 26, 2026&nbsp;&nbsp;10:00 am<br>Judiciary&nbsp;Committee -- Senate Judiciary Subcommittee on 922</a></td>
+</tr></table>
+</li><li id="li159990" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow159990" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:24:43<br><a href="https://video.scstatehouse.gov/mp4/20260226SMedicalAffairsSenateSubcommittee15999_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(15999, 1);">Thursday, February 26, 2026&nbsp;&nbsp;9:30 am<br>Medical Affairs&nbsp;Committee -- Senate Medical Affairs Subcommittee</a></td>
+</tr></table>
+</li><li id="li160590" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160590" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:51:14<br><a href="https://video.scstatehouse.gov/mp4/20260226HJudiciaryArtificialIntelligenceCybersecurity16059_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16059, 1);">Thursday, February 26, 2026&nbsp;&nbsp;9:00 am<br>Judiciary&nbsp;Committee -- Judiciary Artificial Intelligence, Cybersecurity, & Special Laws Subcommittee on 4764, 5075</a></td>
+</tr></table>
+</li><li id="li160230" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160230" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:39:23<br><a href="https://video.scstatehouse.gov/mp4/20260226HMedMilPublicMunAffrsMMedicaland16023_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16023, 1);">Thursday, February 26, 2026&nbsp;&nbsp;9:00 am<br>Medical, Military, Public and Municipal Affairs&nbsp;Committee -- 3-M Medical and Health Affairs on 146, 449, 4042</a></td>
+</tr></table>
+</li><li id="li160110" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160110" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:08:42<br><a href="https://video.scstatehouse.gov/mp4/20260226SLaborCommerceandIndustryCommittee16011_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16011, 1);">Thursday, February 26, 2026&nbsp;&nbsp;9:00 am<br>Labor, Commerce and Industry&nbsp;Committee -- Labor, Commerce and Industry Committee</a></td>
+</tr></table>
+</li><li id="li160060" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160060" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:15:13<br><a href="https://video.scstatehouse.gov/mp4/20260226STransportationSenateSubcomittee16006_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16006, 1);">Thursday, February 26, 2026&nbsp;&nbsp;9:00 am<br>Transportation&nbsp;Committee -- Senate Transportation Subcomittee</a></td>
+</tr></table>
+</li><li id="li160600" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160600" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:10:12<br><a href="https://video.scstatehouse.gov/mp4/20260226SJudiciarySenateSubcommittee16060_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16060, 1);">Thursday, February 26, 2026&nbsp;&nbsp;8:30 am<br>Judiciary&nbsp;Committee -- Senate Judiciary Subcommittee on 823</a></td>
+</tr></table>
+</li><li id="li160670" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:none;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160670" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:28:54<br><a href="https://video.scstatehouse.gov/mp4/20260225SSenate16067_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16067, 1);">Wednesday, February 25, 2026&nbsp;&nbsp;12:15 pm<br>Senate -- Senate <b> - Part&nbsp;1</b></a></td>
+</tr></table>
+</li>
+<li id="li160671" style="margin:0; padding:0; background-color:transparent; "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160671" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; padding-left:20px;"><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">3:37:00<br><a href="https://video.scstatehouse.gov/mp4/20260225SSenate16067_2.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16067, 2);">Wednesday, February 25, 2026&nbsp;&nbsp;12:15 pm<br>Senate -- Senate <b> - Part&nbsp;2</b></a></td>
+</tr></table>
+</li><li id="li160610" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160610" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:29:03<br><a href="https://video.scstatehouse.gov/mp4/20260225SJudiciarySubcommitteeonS16061_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16061, 1);">Wednesday, February 25, 2026&nbsp;&nbsp;11:00 am<br>Judiciary&nbsp;Committee -- Judiciary Subcommittee on 504, 3020, 3285, 4720</a></td>
+</tr></table>
+</li><li id="li160070" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160070" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:27:33<br><a href="https://video.scstatehouse.gov/mp4/20260225SFinanceTransportationandRegulatory16007_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16007, 1);">Wednesday, February 25, 2026&nbsp;&nbsp;11:00 am<br>Finance&nbsp;Committee -- Finance Transportation and Regulatory Budget Subcommittee</a></td>
+</tr></table>
+</li><li id="li160660" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160660" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">8:54:32<br><a href="https://video.scstatehouse.gov/mp4/20260225HHouseofRepresentatives16066_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16066, 1);">Wednesday, February 25, 2026&nbsp;&nbsp;10:00 am<br>House of Representatives -- House of Representatives</a></td>
+</tr></table>
+</li><li id="li160280" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160280" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">1:59:23<br><a href="https://video.scstatehouse.gov/mp4/20260225SEducationSenateFull16028_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16028, 1);">Wednesday, February 25, 2026&nbsp;&nbsp;10:00 am<br>Education&nbsp;Committee -- Senate Education Full Committee on 4902</a></td>
+</tr></table>
+</li><li id="li159960" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow159960" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:49:28<br><a href="https://video.scstatehouse.gov/mp4/20260225SMedicalAffairsSenateSubcommittee15996_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(15996, 1);">Wednesday, February 25, 2026&nbsp;&nbsp;10:00 am<br>Medical Affairs&nbsp;Committee -- Senate Medical Affairs Subcommittee on 299, 862, 935</a></td>
+</tr></table>
+</li><li id="li160630" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160630" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:31:00<br><a href="https://video.scstatehouse.gov/mp4/20260225HEdandPublicWorksEPWFullCommittee16063_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16063, 1);">Wednesday, February 25, 2026&nbsp;&nbsp;9:00 am<br>Education and Public Works&nbsp;Committee -- E.P.W. Full Committee</a></td>
+</tr></table>
+</li><li id="li160260" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160260" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:48:56<br><a href="https://video.scstatehouse.gov/mp4/20260225HLaborCommerceandIndustryLCIBankingand16026_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16026, 1);">Wednesday, February 25, 2026&nbsp;&nbsp;9:00 am<br>Labor, Commerce and Industry&nbsp;Committee -- L.C.I. Banking and Insurance Subcommittee</a></td>
+</tr></table>
+</li><li id="li160220" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160220" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:21:04<br><a href="https://video.scstatehouse.gov/mp4/20260225HMedMilPublicMunAffrsMMilitaryand16022_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16022, 1);">Wednesday, February 25, 2026&nbsp;&nbsp;9:00 am<br>Medical, Military, Public and Municipal Affairs&nbsp;Committee -- 3-M Military and Veterans Affairs on 695</a></td>
+</tr></table>
+</li><li id="li160140" style="margin:0; padding:0; background-color:transparent;  "><table cellpadding=0 cellspacing=0 width=100% style="margin:5px 0; padding:0; border-bottom:1px solid #cccccc;"><tr onMouseOver="">
+<td style="width:30px;"><img id="arrow160140" style="display:inline-block; visibility:hidden;" src="/images/rightarrow.jpg"></td>
+<td style="width: 1px;"><img style="width:1px; height:40px;" src="/images/blank.png"></td>
+<td style="width:400px; "><div style="float:right; text-align:right; font-size:10px; padding-right:20px;">0:59:45<br><a href="https://video.scstatehouse.gov/mp4/20260225SFamilyandVeteransServicesFVSChildWelfare16014_1.mp4" alt="Download Video" title="Download Video"><img width="20" height="20" alt="Download Video" title="Download Video" src="/images/icon_download.png"></a></div><a alt="Play Video" title="Play Video" style="font-size:11px; " href="javascript:void(0);" onClick="this.style.color='purple'; changevideo(16014, 1);">Wednesday, February 25, 2026&nbsp;&nbsp;9:00 am<br>Family and Veterans' Services&nbsp;Committee -- FVS Child Welfare Subcommittee on 710, 777</a></td>
+</tr></table>
+</li><li id="li159910" style="margin:0; padding:0; background-color:transparent;  "><table </ul></body></html>
