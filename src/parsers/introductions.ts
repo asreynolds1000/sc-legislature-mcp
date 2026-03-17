@@ -1,5 +1,5 @@
-import { parse } from 'node-html-parser'
-import { rejectIfCloudflare } from './parser-utils.js'
+import { safeParse } from './parser-utils.js'
+import { ParserStructureError } from '../errors.js'
 import type { Introduction } from '../types.js'
 
 /**
@@ -8,9 +8,13 @@ import type { Introduction } from '../types.js'
  * Introduction pages list newly filed bills with bill number, sponsor, and title.
  */
 export function parseIntroductions(html: string): Introduction[] {
-  rejectIfCloudflare(html)
-
-  const root = parse(html)
+  let root
+  try {
+    root = safeParse(html, 'introductions')
+  } catch (e) {
+    if (e instanceof ParserStructureError) return []
+    throw e
+  }
   const introductions: Introduction[] = []
 
   // Introduction pages have bill links and descriptions

@@ -1,5 +1,5 @@
-import { parse } from 'node-html-parser'
-import { rejectIfCloudflare } from './parser-utils.js'
+import { safeParse } from './parser-utils.js'
+import { ParserStructureError } from '../errors.js'
 import type { DelegationMember } from '../types.js'
 
 /**
@@ -12,9 +12,13 @@ import type { DelegationMember } from '../types.js'
  * preceded by "Senate" or "House" headers.
  */
 export function parseDelegation(html: string): DelegationMember[] {
-  rejectIfCloudflare(html)
-
-  const root = parse(html)
+  let root
+  try {
+    root = safeParse(html, 'delegation')
+  } catch (e) {
+    if (e instanceof ParserStructureError) return []
+    throw e
+  }
   const members: DelegationMember[] = []
 
   // Find the delegation content div

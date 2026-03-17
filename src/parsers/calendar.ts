@@ -1,5 +1,5 @@
-import { parse } from 'node-html-parser'
-import { rejectIfCloudflare } from './parser-utils.js'
+import { safeParse } from './parser-utils.js'
+import { ParserStructureError } from '../errors.js'
 import type { CalendarEntry } from '../types.js'
 
 /**
@@ -9,9 +9,13 @@ import type { CalendarEntry } from '../types.js'
  * typically contains bill numbers with links and brief descriptions.
  */
 export function parseCalendar(html: string): CalendarEntry[] {
-  rejectIfCloudflare(html)
-
-  const root = parse(html)
+  let root
+  try {
+    root = safeParse(html, 'calendar')
+  } catch (e) {
+    if (e instanceof ParserStructureError) return []
+    throw e
+  }
   const entries: CalendarEntry[] = []
   let order = 0
 

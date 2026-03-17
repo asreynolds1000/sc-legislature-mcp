@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { parseMeetingVideoList } from '../../src/parsers/meeting-video-list.js'
-import { ParserStructureError, CloudflareChallengeError } from '../../src/errors.js'
+import { CloudflareChallengeError, ParserStructureError } from '../../src/errors.js'
 
 const fixturesDir = join(import.meta.dirname, '..', 'fixtures')
 
@@ -43,10 +43,14 @@ describe('parseMeetingVideoList', () => {
     }
   })
 
-  it('returns empty array for genuinely empty page', () => {
+  it('returns empty array for page with no changevideo links', () => {
     const html = '<html><body><p>No meetings found.</p></body></html>'
     const meetings = parseMeetingVideoList(html)
     expect(meetings).toEqual([])
+  })
+
+  it('throws ParserStructureError for empty HTML', () => {
+    expect(() => parseMeetingVideoList('')).toThrow(ParserStructureError)
   })
 
   it('throws CloudflareChallengeError for CF page', () => {

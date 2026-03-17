@@ -66,15 +66,24 @@ export function registerCommitteeTools(server: McpServer) {
           const rosterHtml = await getMemberRoster(args.chamber)
           const roster = parseMemberRoster(rosterHtml)
           const query = args.name.toLowerCase()
-          const match = roster.find((m) => m.name.toLowerCase().includes(query))
+          const matches = roster.filter((m) => m.name.toLowerCase().includes(query))
 
-          if (!match) {
+          if (matches.length === 0) {
             return {
               content: [{ type: 'text', text: `No ${args.chamber === 'S' ? 'Senator' : 'Representative'} found matching "${args.name}". Try a different spelling or check the other chamber.` }],
               isError: true,
             }
           }
-          code = match.memberCode
+
+          if (matches.length > 1) {
+            const names = matches.map((m) => `${m.name} (code: ${m.memberCode})`).join(', ')
+            return {
+              content: [{ type: 'text', text: `Multiple matches for "${args.name}": ${names}. Use member_code for an exact lookup.` }],
+              isError: true,
+            }
+          }
+
+          code = matches[0].memberCode
         }
 
         if (!code) {

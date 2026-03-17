@@ -36,12 +36,15 @@ interface CacheEntry {
 }
 
 const cache = new Map<string, CacheEntry>()
-const MAX_CACHE_SIZE = 200
+const MAX_CACHE_ENTRIES = 50
+const MAX_CACHE_BYTES = 50 * 1024 * 1024 // 50MB
+let cacheBytes = 0
 
 function getCached(key: string, ttlMs: number): string | null {
   const entry = cache.get(key)
   if (!entry) return null
   if (Date.now() - entry.timestamp > ttlMs) {
+    cacheBytes -= entry.data.length * 2 // rough byte estimate for JS strings
     cache.delete(key)
     return null
   }
@@ -49,8 +52,10 @@ function getCached(key: string, ttlMs: number): string | null {
 }
 
 function setCache(key: string, data: string): void {
-  // Evict oldest entries if cache exceeds max size
-  if (cache.size >= MAX_CACHE_SIZE) {
+  const dataBytes = data.length * 2 // rough byte estimate
+
+  // Evict oldest entries until under limits
+  while ((cache.size >= MAX_CACHE_ENTRIES || cacheBytes + dataBytes > MAX_CACHE_BYTES) && cache.size > 0) {
     let oldest: string | null = null
     let oldestTime = Infinity
     for (const [k, v] of cache) {
@@ -59,9 +64,17 @@ function setCache(key: string, data: string): void {
         oldest = k
       }
     }
-    if (oldest) cache.delete(oldest)
+    if (oldest) {
+      const evicted = cache.get(oldest)
+      if (evicted) cacheBytes -= evicted.data.length * 2
+      cache.delete(oldest)
+    } else {
+      break
+    }
   }
+
   cache.set(key, { data, timestamp: Date.now() })
+  cacheBytes += dataBytes
 }
 
 // Cache TTLs
@@ -167,9 +180,35 @@ async function fetchHtml(
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetchWithRetry(url, options)
   if (!response.ok) {
+    if (response.status === 404) {
+      throw new NetworkError('Video meeting not found. The meeting key may be invalid.')
+    }
     throw new NetworkError(`HTTP ${response.status} from ${url}`)
   }
   return response.json() as Promise<T>
+}
+
+// --- Input validation ---
+
+/** Validate member code is numeric only */
+function validateMemberCode(code: string): void {
+  if (!/^\d+$/.test(code)) {
+    throw new Error(`Invalid member code: "${code}" (must be numeric)`)
+  }
+}
+
+/** Validate county name is alphabetic + spaces only */
+function validateCounty(county: string): void {
+  if (!/^[A-Za-z\s.'-]+$/.test(county)) {
+    throw new Error(`Invalid county name: "${county}" (must be alphabetic)`)
+  }
+}
+
+/** Validate date is YYYY-MM-DD format */
+function validateDate(date: string): void {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    throw new Error(`Invalid date format: "${date}" (expected YYYY-MM-DD)`)
+  }
 }
 
 // --- Public API ---
@@ -271,6 +310,14 @@ export async function getMeetings(chamber?: 'S' | 'H', weekOffset?: number): Pro
   return html
 }
 
+/** Convert YYYY-MM-DD to MM/DD/YYYY for scstatehouse.gov POST forms */
+function toStatehouseDate(isoDate: string): string {
+  const match = isoDate.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (match) return `${match[2]}/${match[3]}/${match[1]}`
+  // Already in MM/DD/YYYY or unknown format — pass through
+  return isoDate
+}
+
 /** Post status activity report for a date range */
 export async function getStatusActivity(
   session: number,
@@ -286,8 +333,8 @@ export async function getStatusActivity(
   const body = new URLSearchParams({
     session: String(session),
     chamber,
-    begdate: dateFrom,
-    enddate: dateTo,
+    begdate: toStatehouseDate(dateFrom),
+    enddate: toStatehouseDate(dateTo),
     type: format,
     headerfooter: '1',
   })
@@ -314,6 +361,7 @@ export async function getCommitteeList(chamber: 'S' | 'H'): Promise<string> {
 
 /** Get individual member detail page */
 export async function getMemberDetail(code: string): Promise<string> {
+  validateMemberCode(code)
   const cacheKey = `member:${code}`
   const cached = getCached(cacheKey, TTL.MEMBER_DETAIL)
   if (cached) return cached
@@ -353,6 +401,7 @@ export async function searchLegislatorByAddress(
 
 /** Get county delegation */
 export async function getDelegation(county: string): Promise<string> {
+  validateCounty(county)
   const body = new URLSearchParams({
     delegation: county,
     headerfooter: '1',
@@ -371,6 +420,7 @@ export async function getCalendarPage(
   chamber: 'S' | 'H',
   date: string,
 ): Promise<string> {
+  validateDate(date)
   const sessionSuffix = String(session).slice(-2) // 126 → "26"
   const startYear = 1975 + (session - 101) * 2
   const endYear = startYear + 1
@@ -396,6 +446,7 @@ export async function getIntroductionsPage(
   chamber: 'S' | 'H',
   date: string,
 ): Promise<string> {
+  validateDate(date)
   const sessionSuffix = String(session).slice(-2)
   const startYear = 1975 + (session - 101) * 2
   const endYear = startYear + 1

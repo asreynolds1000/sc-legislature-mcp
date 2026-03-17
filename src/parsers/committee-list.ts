@@ -1,5 +1,5 @@
-import { parse } from 'node-html-parser'
-import { rejectIfCloudflare } from './parser-utils.js'
+import { safeParse } from './parser-utils.js'
+import { ParserStructureError } from '../errors.js'
 import type { Committee, CommitteeMember } from '../types.js'
 
 /**
@@ -19,9 +19,7 @@ import type { Committee, CommitteeMember } from '../types.js'
  * Members listed as <a href="/member.php?code=XXX">Name</a>
  */
 export function parseCommitteeList(html: string, chamber: 'S' | 'H'): Committee[] {
-  rejectIfCloudflare(html)
-
-  const root = parse(html)
+  const root = safeParse(html, 'committee-list')
   const committees: Committee[] = []
 
   // Find all anchor names (committee abbreviations like "agr", "ban", etc.)

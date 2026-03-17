@@ -52,8 +52,8 @@ export function registerMeetingTools(server: McpServer) {
     'Get SC Legislature bill status activity for a date range — "what happened this week." Shows bills that had actions (committee votes, floor votes, referrals, etc.) during the specified period.',
     {
       chamber: z.enum(['S', 'H', 'B']).optional().describe('S=Senate, H=House, B=Both. Default: B'),
-      date_from: z.string().describe('Start date MM/DD/YYYY'),
-      date_to: z.string().describe('End date MM/DD/YYYY'),
+      date_from: z.string().describe('Start date YYYY-MM-DD'),
+      date_to: z.string().describe('End date YYYY-MM-DD'),
     },
     async (args) => {
       try {

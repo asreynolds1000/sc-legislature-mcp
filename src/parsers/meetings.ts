@@ -1,5 +1,5 @@
-import { parse } from 'node-html-parser'
-import { rejectIfCloudflare } from './parser-utils.js'
+import { safeParse } from './parser-utils.js'
+import { ParserStructureError } from '../errors.js'
 import type { Meeting } from '../types.js'
 
 /**
@@ -12,9 +12,13 @@ import type { Meeting } from '../types.js'
  * - Bill links: <a href="/billsearch.php?billnumbers=532&session=126...">532</a>
  */
 export function parseMeetings(html: string): Meeting[] {
-  rejectIfCloudflare(html)
-
-  const root = parse(html)
+  let root
+  try {
+    root = safeParse(html, 'meetings')
+  } catch (e) {
+    if (e instanceof ParserStructureError) return []
+    throw e
+  }
   const meetings: Meeting[] = []
   let currentDate = ''
 

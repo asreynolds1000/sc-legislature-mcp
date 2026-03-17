@@ -1,5 +1,5 @@
-import { parse } from 'node-html-parser'
-import { rejectIfCloudflare } from './parser-utils.js'
+import { safeParse } from './parser-utils.js'
+import { ParserStructureError } from '../errors.js'
 import type { VideoScheduleEntry } from '../types.js'
 
 /**
@@ -12,13 +12,13 @@ import type { VideoScheduleEntry } from '../types.js'
  * Note: If the legislature is not in session, this may return empty results.
  */
 export function parseVideoSchedule(html: string): VideoScheduleEntry[] {
-  rejectIfCloudflare(html)
-
-  if (!html || html.trim().length === 0) {
-    return []
+  let root
+  try {
+    root = safeParse(html, 'video-schedule')
+  } catch (e) {
+    if (e instanceof ParserStructureError && html.trim().length === 0) return []
+    throw e
   }
-
-  const root = parse(html)
   const entries: VideoScheduleEntry[] = []
 
   // The schedule response contains meeting entries with date, time, committee, and room info

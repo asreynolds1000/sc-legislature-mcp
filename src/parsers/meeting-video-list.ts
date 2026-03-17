@@ -1,5 +1,4 @@
-import { parse } from 'node-html-parser'
-import { rejectIfCloudflare } from './parser-utils.js'
+import { safeParse } from './parser-utils.js'
 import { ParserStructureError } from '../errors.js'
 import type { VideoMeeting } from '../types.js'
 
@@ -13,9 +12,7 @@ import type { VideoMeeting } from '../types.js'
  * - Date/time and committee in the link text
  */
 export function parseMeetingVideoList(html: string): VideoMeeting[] {
-  rejectIfCloudflare(html)
-
-  const root = parse(html)
+  const root = safeParse(html, 'meeting-video-list')
 
   // Structure validation: meetings page should have <li> elements with changevideo
   const listItems = root.querySelectorAll('li')

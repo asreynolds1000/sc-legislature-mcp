@@ -1,5 +1,4 @@
-import { parse } from 'node-html-parser'
-import { rejectIfCloudflare } from './parser-utils.js'
+import { safeParse } from './parser-utils.js'
 import type { MemberDetail } from '../types.js'
 
 /**
@@ -15,9 +14,7 @@ import type { MemberDetail } from '../types.js'
  * - District map: <a href="/maps/senate/Sen44.pdf">
  */
 export function parseMemberDetail(html: string): MemberDetail {
-  rejectIfCloudflare(html)
-
-  const root = parse(html)
+  const root = safeParse(html, 'member-detail')
 
   // Extract name from breadcrumbs: "Senate > Members of the Senate > Senator Brian Adams"
   // Or from the h2 element directly
@@ -46,11 +43,18 @@ export function parseMemberDetail(html: string): MemberDetail {
   const districtMatch = districtText.match(/District\s+(\d+)\s*-\s*(.+)/)
   const district = districtMatch ? `District ${districtMatch[1]} - ${districtMatch[2].trim()}` : districtText
 
-  // Extract party from page content (if present — not always explicit)
+  // Extract party — look in the paragraph near the district info, not the full page
+  // The party appears in a <p> with font-size:17px near the top (e.g., "Republican - Berkeley")
   let party = ''
-  const pageText = root.text
-  if (pageText.includes('Republican')) party = 'R'
-  else if (pageText.includes('Democrat')) party = 'D'
+  const partyP = allParagraphs.find((p) => {
+    const text = p.text.trim()
+    return (text.includes('Republican') || text.includes('Democrat')) && text.length < 100
+  })
+  if (partyP) {
+    const partyText = partyP.text.trim()
+    if (partyText.includes('Republican')) party = 'R'
+    else if (partyText.includes('Democrat')) party = 'D'
+  }
 
   // Extract Columbia address and phone
   const allText = root.innerHTML
@@ -103,9 +107,7 @@ export function parseMemberDetail(html: string): MemberDetail {
  * Used for resolving names to member codes.
  */
 export function parseMemberRoster(html: string): Array<{ name: string; memberCode: string; district: string; party: string }> {
-  rejectIfCloudflare(html)
-
-  const root = parse(html)
+  const root = safeParse(html, 'member-roster')
   const members: Array<{ name: string; memberCode: string; district: string; party: string }> = []
 
   const links = root.querySelectorAll('a[href*="member.php?code="]')

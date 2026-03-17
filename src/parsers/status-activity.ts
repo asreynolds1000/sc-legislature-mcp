@@ -1,48 +1,73 @@
-import { parse } from 'node-html-parser'
-import { rejectIfCloudflare } from './parser-utils.js'
+import { safeParse } from './parser-utils.js'
 import type { StatusActivity } from '../types.js'
 
 /**
  * Parse the statusact.php POST response for bill status activity.
  *
- * The response contains bill actions in a formatted HTML page.
- * Bill entries appear as links with billnumber text followed by action descriptions.
+ * The resultsbox div contains bill entries. When the legislature is in session,
+ * entries appear as bill links with titles and action descriptions.
+ * When there's no activity, the page shows "No activity during this time frame."
+ *
+ * The page structure (when there IS activity) contains:
+ * - Date headers in bold
+ * - Bill links with billnumber text
+ * - Action descriptions in adjacent text
+ * - Title text (when "both" format selected)
  */
 export function parseStatusActivity(html: string): StatusActivity[] {
-  rejectIfCloudflare(html)
-
-  const root = parse(html)
+  const root = safeParse(html, 'status-activity')
   const activities: StatusActivity[] = []
 
-  // Status activity shows date header and bill entries
-  // Look for billsearch links which contain bill numbers
-  const links = root.querySelectorAll('a[href*="billsearch"]')
+  // Check for "No activity" message
+  const pageText = root.text
+  if (pageText.includes('No activity during this time frame') || pageText.includes('No bills found')) {
+    return []
+  }
+
+  // Find the results container
+  const resultsBox = root.querySelector('#resultsbox')
+  if (!resultsBox) return []
+
+  const resultsHtml = resultsBox.innerHTML
+
+  // Extract date from the page header (e.g., "Status Activity on 03/17/2026")
+  const dateMatch = resultsHtml.match(/Status Activity on (\d{2}\/\d{2}\/\d{4})/)
+  const reportDate = dateMatch ? dateMatch[1] : ''
+
+  // Look for bill links — these are the primary content
+  const links = resultsBox.querySelectorAll('a[href*="billsearch"]')
 
   for (const link of links) {
     const billNumber = link.text.trim()
-    if (!billNumber || !billNumber.match(/^[SH]\.?\s*\d+/i)) continue
+    if (!billNumber) continue
 
-    const href = link.getAttribute('href') || ''
+    // Determine chamber from bill prefix
+    const chamber: 'S' | 'H' = billNumber.toUpperCase().startsWith('H') ? 'H' : 'S'
 
-    // Get the surrounding text for the action description
+    // Get surrounding text for title and action
     const parent = link.parentNode
     if (!parent) continue
 
+    const parentHtml = parent.innerHTML
     const parentText = parent.text.replace(/&nbsp;/g, ' ').trim()
 
-    // Extract title — typically in bold or after the bill number
-    // Pattern: "S. 123 — Title text here"
-    const titleMatch = parentText.match(new RegExp(billNumber.replace(/\./g, '\\.') + '\\s*[-—]?\\s*(.+)'))
-    const title = titleMatch ? titleMatch[1].trim() : ''
+    // Extract text after the bill number link for title/action
+    const linkEndPos = parentHtml.indexOf('</a>', parentHtml.indexOf(link.getAttribute('href') || ''))
+    const afterLink = linkEndPos >= 0
+      ? parentHtml.substring(linkEndPos + 4).replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()
+      : ''
 
-    // Determine chamber from bill prefix
-    const chamber: 'S' | 'H' = billNumber.startsWith('H') ? 'H' : 'S'
+    // Split into title and action if possible
+    // Common pattern: "Title -- Action description"
+    const dashSplit = afterLink.split(/\s*[-—]+\s*/)
+    const title = dashSplit[0]?.trim() || ''
+    const action = dashSplit.slice(1).join(' — ').trim() || afterLink
 
     activities.push({
       billNumber,
       title,
-      action: '', // Will be populated if we can find the action text
-      actionDate: '',
+      action,
+      actionDate: reportDate,
       chamber,
     })
   }

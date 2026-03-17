@@ -1,5 +1,5 @@
-import { parse } from 'node-html-parser'
-import { rejectIfCloudflare } from './parser-utils.js'
+import { safeParse } from './parser-utils.js'
+import { ParserStructureError } from '../errors.js'
 import type { LegislatorResult } from '../types.js'
 
 /**
@@ -8,9 +8,13 @@ import type { LegislatorResult } from '../types.js'
  * Results include links to member profiles with name and district.
  */
 export function parseLegislatorSearch(html: string): LegislatorResult[] {
-  rejectIfCloudflare(html)
-
-  const root = parse(html)
+  let root
+  try {
+    root = safeParse(html, 'legislator-search')
+  } catch (e) {
+    if (e instanceof ParserStructureError) return []
+    throw e
+  }
   const results: LegislatorResult[] = []
 
   const links = root.querySelectorAll('a[href*="member.php?code="]')
