@@ -1,14 +1,22 @@
 # sc-legislature-mcp
 
-MCP server for the South Carolina Legislature (scstatehouse.gov). Provides committee hearing video archives, meeting schedules, floor calendars, status activity, committee rosters, and member details.
+SC civic intelligence MCP server — the legislative half of SC civic data. Covers who represents you (state + federal), what they're doing (bills, committees, sponsorships), and what's happening in the legislature (hearings, schedules, video archive).
 
 **The video archive is the killer feature** — no other legislative data service (LegiScan, Open States, etc.) provides direct links to ~15,000 committee hearing and floor session recordings.
 
 Designed as a complement to:
-- **[legiscan-mcp](https://github.com/sh-patterson/legiscan-mcp)** — bills, votes, sponsors, search
 - **[sc-elections-mcp](https://github.com/asreynolds1000/sc-elections-mcp)** — campaign finance, ethics disclosures
 
-## Tools (12)
+## Tools (17)
+
+### Open States Tools (representation + legislation)
+| Tool | Description |
+|------|-------------|
+| `find_representatives` | Address → state + federal reps (SC Senate/House + US Senators/Rep). Returns `ocd_person_id` for bill lookups. |
+| `search_bills` | Search SC bills by keyword, sponsor, subject, or date. 3,379 bills in current session. |
+| `get_bill` | Full bill detail: action history, sponsors, abstract. Accepts `S 330`, `H1234`, or ocd-bill/... UUID. |
+| `get_legislator_bills` | All bills sponsored by a legislator this session. Takes `ocd_person_id`. |
+| `search_legislators` | Find SC state legislators by name, district, or chamber. |
 
 ### Video Tools
 | Tool | Description |
@@ -31,7 +39,7 @@ Designed as a complement to:
 |------|-------------|
 | `list_committees` | Standing committees with members, chairs, contact info. |
 | `get_member_detail` | Legislator profile: contact, photo, bio, committees, district map. |
-| `find_legislator_by_address` | Find state legislators by address — "who represents me?" |
+| `find_legislator_by_address` | Find SC state legislators by address (returns SC member codes for `get_member_detail`). |
 | `get_county_delegation` | County delegation roster (all state legislators for a county). |
 
 ## Installation
@@ -42,26 +50,29 @@ npm install -g sc-legislature-mcp
 
 Or use with Claude Code:
 ```bash
-claude mcp add sc-legislature-mcp -- npx sc-legislature-mcp
+claude mcp add sc-legislature-mcp --env OPEN_STATES_API_KEY=your_key -- npx sc-legislature-mcp
 ```
 
 ## Configuration
 
-No API keys or authentication required. All data is public.
+**Required:**
+- `OPEN_STATES_API_KEY` — Free API key from [openstates.org/api/register/](https://openstates.org/api/register/). Free tier: 500 requests/day, 1 req/sec.
 
-Optional environment variable:
-- `SC_LEGISLATURE_USER_AGENT` — Custom User-Agent string for HTTP requests
+**Optional:**
+- `SC_LEGISLATURE_USER_AGENT` — Custom User-Agent string for scstatehouse.gov requests
 
 ## Rate Limiting
 
-The server rate-limits to 1 request/second with exponential backoff retries. All responses are cached in memory with appropriate TTLs.
+- **scstatehouse.gov**: 1 req/sec with exponential backoff retries. Responses cached in memory.
+- **Open States API**: 1 req/sec, 500 req/day. Legislators cached 7 days, bills 6 hours.
+- **Nominatim geocoding** (used by `find_representatives`): 1 req/sec, addresses cached 30 days.
 
 ## Development
 
 ```bash
 npm install
 npm run dev      # Start with tsx (hot reload)
-npm test         # Run tests (58 tests)
+npm test         # Run tests
 npm run build    # Compile TypeScript
 ```
 
