@@ -5,10 +5,11 @@ import { registerVideoTools } from './tools/video.js'
 import { registerMeetingTools } from './tools/meetings.js'
 import { registerCommitteeTools } from './tools/committees.js'
 import { registerMemberTools } from './tools/members.js'
+import { registerOpenStatesTools } from './tools/open-states.js'
 
 const server = new McpServer({
   name: 'sc-legislature-mcp',
-  version: '0.1.0',
+  version: '0.2.0',
 })
 
 // Video archive tools (scstatehouse.gov/video/)
@@ -20,6 +21,9 @@ registerMeetingTools(server)
 // Committee & Member tools
 registerCommitteeTools(server)
 registerMemberTools(server)
+
+// Open States tools (representation + legislation)
+registerOpenStatesTools(server)
 
 async function main() {
   const transport = new StdioServerTransport()
