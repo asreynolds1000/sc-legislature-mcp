@@ -2,3 +2,4 @@ node_modules/
 dist/
 *.tsbuildinfo
 meetings-senate-vid-full.html
+.DS_Store
