@@ -33,6 +33,7 @@ async function throttle(): Promise<void> {
 interface CacheEntry {
   data: string
   timestamp: number
+  ttl?: number
 }
 
 const cache = new Map<string, CacheEntry>()
@@ -43,7 +44,8 @@ let cacheBytes = 0
 function getCached(key: string, ttlMs: number): string | null {
   const entry = cache.get(key)
   if (!entry) return null
-  if (Date.now() - entry.timestamp > ttlMs) {
+  const effectiveTtl = entry.ttl ?? ttlMs
+  if (Date.now() - entry.timestamp > effectiveTtl) {
     cacheBytes -= entry.data.length * 2 // rough byte estimate for JS strings
     cache.delete(key)
     return null
@@ -51,7 +53,7 @@ function getCached(key: string, ttlMs: number): string | null {
   return entry.data
 }
 
-function setCache(key: string, data: string): void {
+function setCache(key: string, data: string, ttlOverride?: number): void {
   const dataBytes = data.length * 2 // rough byte estimate
 
   // Evict oldest entries until under limits
@@ -73,13 +75,14 @@ function setCache(key: string, data: string): void {
     }
   }
 
-  cache.set(key, { data, timestamp: Date.now() })
+  cache.set(key, { data, timestamp: Date.now(), ttl: ttlOverride })
   cacheBytes += dataBytes
 }
 
 // Cache TTLs
 const TTL = {
   VIDEO_LOAD: 24 * 60 * 60 * 1000,       // 24h — MP4 URLs are stable
+  VIDEO_LOAD_LIVE: 5 * 60 * 1000,        // 5min — live session status changes frequently
   MEETING_LIST: 15 * 60 * 1000,            // 15min
   SCHEDULE: 5 * 60 * 1000,                 // 5min
   COMMITTEE_ROSTER: 24 * 60 * 60 * 1000,   // 24h
@@ -236,7 +239,8 @@ export async function loadVideo(key: number, part = 1): Promise<VideoLoadResult>
     body: body.toString(),
   })
 
-  setCache(cacheKey, JSON.stringify(result))
+  const cacheTtl = result.meetingactive ? TTL.VIDEO_LOAD_LIVE : undefined
+  setCache(cacheKey, JSON.stringify(result), cacheTtl)
   return result
 }
 
@@ -280,17 +284,6 @@ export async function getVideoMeetingList(
 
   const url = `${BASE_URL}/meetings.php?${params.toString()}`
   const html = await fetchHtml(url, undefined, LARGE_TIMEOUT_MS)
-  setCache(cacheKey, html)
-  return html
-}
-
-/** Get upcoming video broadcast schedule */
-export async function getVideoSchedule(): Promise<string> {
-  const cacheKey = 'video-schedule'
-  const cached = getCached(cacheKey, TTL.SCHEDULE)
-  if (cached) return cached
-
-  const html = await fetchHtml(`${BASE_URL}/video/schedule.php`)
   setCache(cacheKey, html)
   return html
 }

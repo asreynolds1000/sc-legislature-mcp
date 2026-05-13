@@ -7,7 +7,7 @@ SC civic intelligence MCP server — the legislative half of SC civic data. Cove
 Designed as a complement to:
 - **[sc-elections-mcp](https://github.com/asreynolds1000/sc-elections-mcp)** — campaign finance, ethics disclosures
 
-## Tools (17)
+## Tools (18)
 
 ### Open States Tools (representation + legislation)
 | Tool | Description |
@@ -24,7 +24,8 @@ Designed as a complement to:
 | `search_hearing_videos` | Search video archives by committee, date range, chamber. Returns direct MP4 URLs. |
 | `get_hearing_video` | Get video URL and metadata for a specific meeting by key. |
 | `get_committee_feed` | Get RSS/podcast feed URLs for committee hearing videos. |
-| `get_video_schedule` | Get upcoming live broadcast schedule. |
+| `get_video_schedule` | Today's and upcoming sessions with meeting keys, stream URLs, and download URLs. |
+| `get_live_sessions` | Currently live-streaming sessions with HLS stream URLs. |
 
 ### Schedule & Activity Tools
 | Tool | Description |
