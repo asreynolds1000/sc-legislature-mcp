@@ -1,6 +1,6 @@
 # sc-legislature-mcp
 
-SC civic intelligence MCP server. 17 tools across two data sources:
+SC civic intelligence MCP server. 18 tools across two data sources:
 - **scstatehouse.gov** — video archive, meeting schedules, floor calendar, status activity, committees, member detail
 - **Open States API v3** — find_representatives (state + federal), search_bills, get_bill, get_legislator_bills, search_legislators
 

@@ -28,7 +28,7 @@ describe('MCP server smoke test', () => {
     await server.close()
   })
 
-  it('registers exactly 12 tools', async () => {
+  it('registers exactly 13 tools', async () => {
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
     await Promise.all([
       server.connect(serverTransport),
@@ -36,7 +36,7 @@ describe('MCP server smoke test', () => {
     ])
 
     const { tools } = await client.listTools()
-    expect(tools).toHaveLength(12)
+    expect(tools).toHaveLength(13)
 
     const names = tools.map((t) => t.name).sort()
     expect(names).toEqual([
@@ -45,6 +45,7 @@ describe('MCP server smoke test', () => {
       'get_committee_feed',
       'get_county_delegation',
       'get_hearing_video',
+      'get_live_sessions',
       'get_meetings',
       'get_member_detail',
       'get_new_introductions',
