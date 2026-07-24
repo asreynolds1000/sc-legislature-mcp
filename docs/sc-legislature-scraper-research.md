@@ -288,7 +288,7 @@ Could not fetch scstatehouse.gov/robots.txt (blocked by domain verification). Ho
 ### Rate Limiting Etiquette
 
 - Limit to 1 request/second maximum
-- Use a descriptive User-Agent: `sc-legislature-mcp/1.0 (contact: a@alexreynolds.com)`
+- Use a descriptive User-Agent: `sc-legislature-mcp/1.0 (contact: your-contact@example.com)`
 - Cache aggressively — most data doesn't change more than daily
 - Avoid scraping during peak legislative session hours if possible
 - Never scrape the staff portal (`/onlineservices/`)

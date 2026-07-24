@@ -2,7 +2,7 @@
 
 **Date:** 2026-03-17
 **Source:** Live page analysis of scstatehouse.gov video system
-**Note:** HAR file was not found at `/Users/alexr/Downloads/www.scstatehouse.gov.har`. Analysis based on live fetches of all video-related endpoints.
+**Note:** HAR file was not found at `~/Downloads/www.scstatehouse.gov.har`. Analysis based on live fetches of all video-related endpoints.
 
 ---
 
