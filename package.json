@@ -1,6 +1,6 @@
 {
   "name": "sc-legislature-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "SC civic intelligence MCP: committee hearing videos, meeting schedules, floor calendars, status activity, committees, member details, plus representative lookup (state + federal) and bill search via Open States API",
   "type": "module",
   "bin": {
