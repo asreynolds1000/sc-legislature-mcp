@@ -2,11 +2,11 @@ import { NetworkError, RateLimitError } from '../errors.js'
 
 const OS_BASE_URL = 'https://v3.openstates.org'
 const NOMINATIM_BASE_URL = 'https://nominatim.openstreetmap.org'
-const API_KEY: string = (() => {
+function getApiKey(): string {
   const key = process.env.OPEN_STATES_API_KEY
   if (!key) throw new Error('OPEN_STATES_API_KEY environment variable is required. Get a free key at https://openstates.org/api/register/')
   return key
-})()
+}
 const USER_AGENT = 'sc-legislature-mcp/0.2.0 (https://github.com/asreynolds1000/sc-legislature-mcp)'
 
 // NOTE: Free tier = 500 requests/day, 1 req/sec. The API returns no rate limit headers,
@@ -88,10 +88,11 @@ function setCache(key: string, data: string): void {
 // --- Core fetch ---
 
 async function fetchOs<T>(path: string, params: Record<string, string | string[]> = {}): Promise<T> {
+  const apiKey = getApiKey()
   await throttleOs()
 
   const url = new URL(`${OS_BASE_URL}${path}`)
-  url.searchParams.set('apikey', API_KEY)
+  url.searchParams.set('apikey', apiKey)
   for (const [k, v] of Object.entries(params)) {
     if (v === undefined || v === '') continue
     if (Array.isArray(v)) {
