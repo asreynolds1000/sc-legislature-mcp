@@ -282,7 +282,7 @@ Open States has committees and events that LegiScan lacks, plus geo-based legisl
 | County delegations | LOW | scstatehouse.gov `/delegations.php` |
 | Contact info / photos | LOW | scstatehouse.gov `/member.php` |
 
-**Do NOT install the Open States MCP.** The AG2 auto-generated server is not production quality (3 commits, no error handling, depends on `autogen` framework). If you need geo-based legislator lookup, call the Open States API v3 directly with your existing API key (`f8747e7f-eaaf-4f16-994a-8daf6a9d7bd8`) — it's a simple REST call, no MCP needed.
+**Do NOT install the Open States MCP.** The AG2 auto-generated server is not production quality (3 commits, no error handling, depends on `autogen` framework). If you need geo-based legislator lookup, call the Open States API v3 directly with your existing API key (`$OPEN_STATES_API_KEY`) — it's a simple REST call, no MCP needed.
 
 ### Quick-Win Improvements to LegiScan MCP
 

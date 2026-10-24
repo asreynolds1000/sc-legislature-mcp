@@ -55,7 +55,7 @@ See also: `sc-legislature-har-analysis.md` in this directory (detailed endpoint 
 
 ### Open States API Key
 
-Alex already has one: `f8747e7f-eaaf-4f16-994a-8daf6a9d7bd8` (in global CLAUDE.md Quick Reference).
+Alex already has one: the `OPEN_STATES_API_KEY` environment variable.
 
 ---
 
@@ -503,6 +503,6 @@ Not worth building a dependency on for an SC-specific MCP server.
 - scraper-mcp (reference MCP): `github.com/cotdp/scraper-mcp` — Three-tier cache, token optimization
 - scrap-mcp (reference MCP): `github.com/sigmaSd/scrap-mcp` — Simple CSS-selector-based scraping
 - sc-elections-mcp (our own): `~/Code/sc-elections-mcp` — Proven parser + client + tool pattern
-- HAR analysis: `~/Projects/_scratch/sc-legislature-har-analysis.md` — Full endpoint catalog
+- HAR analysis: a HAR capture of the SC Legislature site, used to build the full endpoint catalog (kept outside this repo)
 - node-html-parser: `npmjs.com/package/node-html-parser` — Fast HTML parser used in sc-elections-mcp
 - cheerio: `cheerio.js.org` — jQuery-like API, heavier but more ergonomic for complex DOM
