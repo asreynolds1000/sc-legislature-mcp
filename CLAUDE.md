@@ -8,7 +8,7 @@ Pairs with `sc-elections-mcp` for the full SC civic data picture (legislature he
 
 ## Open States API
 
-**Key:** `REDACTED_OPEN_STATES_KEY` (also in `~/.claude.json` env)
+**Key:** read from the `OPEN_STATES_API_KEY` environment variable (see `src/api/open-states-client.ts`). Do not write the key into this file.
 **Base URL:** `https://v3.openstates.org`
 **Rate limits:** 500 req/day, 1 req/sec — design tools to be efficient; cache where possible.
 
