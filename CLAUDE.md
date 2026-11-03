@@ -24,6 +24,8 @@ Pairs with `sc-elections-mcp` for the full SC civic data picture (legislature he
 
 **Include options vary by endpoint** — wrong value returns a 422.
 
+**Cosponsor lists can come back empty.** 2026-11-03: `search_bills` and `get_bill` returned `cosponsors: []` for H 4397, while the scstatehouse.gov bill page lists seven (Frank, Burns, Chumley, Haddon, Morgan, Gilreath, Beach). The cause is not traced yet: it could be Open States data or a missing `include`. Until it is fixed, read sponsors from `https://www.scstatehouse.gov/sess126_2025-2026/bills/<number>.htm`.
+
 ## scstatehouse.gov
 
 Rate limiting: 1 req/sec with exponential backoff (already implemented).
